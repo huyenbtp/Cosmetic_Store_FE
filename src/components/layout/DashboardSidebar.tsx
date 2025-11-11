@@ -15,40 +15,40 @@ import {
   ChevronRight,
 } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 interface DashboardSidebarProps {
   role: "admin" | "cashier";
-  activeSection: string;
-  onSectionChange: (section: string) => void;
 }
 
 const navigationItems = {
   admin: [
-    { id: "dashboard", label: "Dashboard", icon: Home },
-    { id: "cashiers", label: "Cashiers", icon: User },
-    { id: "products", label: "Products", icon: Package },
-    { id: "stock", label: "Stock", icon: Archive },
-    { id: "customers", label: "Customers", icon: Users },
-    { id: "promotions", label: "Promotions", icon: Percent },
-    { id: "analytics", label: "Analytics", icon: TrendingUp },
+    { href: "/admin/dashboard", label: "Dashboard", icon: Home },
+    { href: "/admin/cashiers", label: "Cashiers", icon: User },
+    { href: "/admin/products", label: "Products", icon: Package },
+    { href: "/admin/stock", label: "Stock", icon: Archive },
+    { href: "/admin/customers", label: "Customers", icon: Users },
+    { href: "/admin/promotions", label: "Promotions", icon: Percent },
+    { href: "/admin/analytics", label: "Analytics", icon: TrendingUp },
   ],
   cashier: [
-    { id: "dashboard", label: "Dashboard", icon: Home },
-    { id: "checkout", label: "Checkout", icon: ShoppingCart },
-    { id: "customers", label: "Customers", icon: Users },
-    { id: "daily-summary", label: "Daily summary", icon: Bell },
+    { href: "/cashier/dashboard", label: "Dashboard", icon: Home },
+    { href: "/cashier/checkout", label: "Checkout", icon: ShoppingCart },
+    { href: "/cashier/customers", label: "Customers", icon: Users },
+    { href: "/cashier/daily-summary", label: "Daily summary", icon: Bell },
   ],
 };
 
-export default function DashboardSidebar({ role, activeSection, onSectionChange, }: DashboardSidebarProps) {
+export default function DashboardSidebar({ role }: DashboardSidebarProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const items = navigationItems[role];
+  const pathname = usePathname();
 
   return (
     <aside
       className={cn(
         "bg-sidebar border-r  transition-all duration-300 flex-shrink-0",
-        isCollapsed ? "w-20" : "w-64"
+        isCollapsed ? "w-20" : "w-70"
       )}
       style={{ minHeight: '100vh' }}
     >
@@ -76,13 +76,12 @@ export default function DashboardSidebar({ role, activeSection, onSectionChange,
         <nav className="space-y-2">
           {items.map((item) => {
             const Icon = item.icon;
-            const isActive = activeSection === item.id;
+            const isActive = pathname.startsWith(item.href);
 
             return (
               <Link
-                key={item.id}
-                href={item.id}
-                onClick={() => onSectionChange(item.id)}
+                key={item.href}
+                href={item.href}
                 className={cn(
                   "flex items-center gap-4 h-12 px-3 rounded-lg transition-colors",
                   isActive

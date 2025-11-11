@@ -11,7 +11,6 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [activeSection, setActiveSection] = useState("dashboard");
   const [role, setRole] = useState<"admin" | "cashier" | null>(null);
   const router = useRouter();
 
@@ -32,15 +31,11 @@ export default function DashboardLayout({
 
   return (
     <div className="flex min-h-screen">
-      <DashboardSidebar
-        role={role}
-        activeSection={activeSection}
-        onSectionChange={(section) => setActiveSection(section)}
-      />
+      <DashboardSidebar role={role} />
 
       <div className="flex-1 flex flex-col">
         <DashboardHeader />
-        <main className="flex-1 p-6">{children}</main>
+        <main className="flex-1">{children}</main>
       </div>
     </div>
   );

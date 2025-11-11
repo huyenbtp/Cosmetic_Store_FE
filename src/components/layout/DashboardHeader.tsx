@@ -36,7 +36,7 @@ export function DashboardHeader() {
         </div>
          */}
         <button
-          className="rounded-full p-2.5 hover:bg-secondary"
+          className="rounded-full p-2.5 hover:bg-accent cursor-pointer"
           onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
         >
           {theme == "light"
