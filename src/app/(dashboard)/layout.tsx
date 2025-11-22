@@ -30,12 +30,12 @@ export default function DashboardLayout({
   if (!role) return null;
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex h-screen">
       <DashboardSidebar role={role} />
 
       <div className="flex-1 flex flex-col">
         <DashboardHeader />
-        <main className="flex-1">{children}</main>
+        <main className="flex-1 h-full overflow-y-auto">{children}</main>
       </div>
     </div>
   );

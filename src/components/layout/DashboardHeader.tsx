@@ -18,7 +18,7 @@ export function DashboardHeader() {
   const router = useRouter();
 
   return (
-    <header className="bg-background border-b px-5 py-3 flex items-center justify-end">
+    <header className="bg-background border-b px-5 py-3 flex items-center justify-end sticky top-0">
       {/**
        <div className="flex items-center gap-4">
         <h1 className="text-xl font-semibold">Unleashed Dashboard</h1>

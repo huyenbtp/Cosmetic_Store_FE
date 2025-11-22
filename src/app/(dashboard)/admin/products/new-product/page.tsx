@@ -16,6 +16,14 @@ export default function NewProduct() {
           New Product Item
         </h1>
 
+        <div className="flex items-center gap-4">
+          <Button variant="outline">
+            Save & Unpublish
+          </Button>
+          <Button>
+            Save & Publish
+          </Button>
+        </div>
       </div>
     </div>
   );

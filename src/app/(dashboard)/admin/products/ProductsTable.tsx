@@ -115,6 +115,14 @@ const mockProducts = [
 
 type ProductKey = "name" | "category" | "brand";
 
+export function getStatusBadge(status: string) {
+  if (status === "Published") {
+    return <Badge variant="default" className="bg-green-100 text-green-800">Published</Badge>;
+  } else {
+    return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">Unpublished</Badge>;
+  }
+};
+
 export default function ProductsTable({
   onViewProduct,
   onChangeProductStatus
@@ -134,14 +142,6 @@ export default function ProductsTable({
     }
     return matchesSearch;
   });
-
-  const getStatusBadge = (status: string) => {
-    if (status === "Published") {
-      return <Badge variant="default" className="bg-green-100 text-green-800">Published</Badge>;
-    } else {
-      return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">Unpublished</Badge>;
-    }
-  };
 
   return (
     <Card>
