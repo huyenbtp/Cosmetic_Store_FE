@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import DashboardSidebar from "@/components/layout/DashboardSidebar";
 import { DashboardHeader } from "@/components/layout/DashboardHeader";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { getRole } from "@/lib/auth";
 
 export default function DashboardLayout({
@@ -13,6 +13,7 @@ export default function DashboardLayout({
 }) {
   const [role, setRole] = useState<"admin" | "cashier" | null>(null);
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     const savedRole = getRole() as
@@ -26,6 +27,10 @@ export default function DashboardLayout({
     }
     console.log("saved role: " + savedRole)
   }, [router]);
+
+  useEffect(() => {
+    console.log("Route changed to:", pathname)
+  }, [pathname])
 
   if (!role) return null;
 

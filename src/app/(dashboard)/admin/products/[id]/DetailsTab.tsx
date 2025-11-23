@@ -11,12 +11,12 @@ export default function DetailsTab({
 }) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <Card>
-        <CardContent className="flex flex-1 p-3 justify-center items-center">
+      <Card className="py-3">
+        <CardContent className="px-3">
           <ImageWithFallback
             src={product.image}
             alt={product.name}
-            className="object-contain"
+            className="w-full h-100 rounded-lg border object-contain"
           />
         </CardContent>
       </Card>

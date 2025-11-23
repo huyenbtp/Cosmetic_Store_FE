@@ -48,7 +48,7 @@ export default function DashboardSidebar({ role }: DashboardSidebarProps) {
     <aside
       className={cn(
         "bg-sidebar border-r  transition-all duration-300 flex-shrink-0",
-        isCollapsed ? "w-20" : "w-70"
+        isCollapsed ? "w-20" : "w-65"
       )}
       style={{ minHeight: '100vh' }}
     >

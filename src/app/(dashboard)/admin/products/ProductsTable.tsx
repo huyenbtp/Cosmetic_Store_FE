@@ -158,7 +158,7 @@ export default function ProductsTable({
           </div>
 
           <Select value={searchBy} onValueChange={(value: ProductKey) => setSearchBy(value)}>
-            <SelectTrigger className="w-full sm:w-48">
+            <SelectTrigger size="sm" className="w-full sm:w-48">
               <SelectValue placeholder="Search by ..." />
             </SelectTrigger>
             <SelectContent>
