@@ -1,27 +1,29 @@
 "use client"
 
 import { useRouter } from "next/navigation";
-import ProductsTable from "./ProductsTable";
+import CustomersTable from "./CustomersTable";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 
-export default function ProductsManagement() {
+export default function CustomersManagement() {
   const router = useRouter();
 
   return (
     <div className="px-8 py-6 space-y-8">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">
-          Products Management
+          Customers Management
         </h1>
-        <Button onClick={() => { router.push("products/new-product"); }}>
+        <Button onClick={() => { router.push("customers/new-customer"); }}>
           <Plus className="w-4 h-4 mr-2" />
-          Add New Product
+          Add New Customer
         </Button>
       </div>
 
-      <ProductsTable
-        onView={(id) => { router.push(`products/${id}`); }}
+      <CustomersTable
+        onView={() => { }}
+        onEdit={() => { }}
+        onDelete={() => { }}
       />
     </div>
   );

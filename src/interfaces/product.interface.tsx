@@ -1,3 +1,14 @@
+export interface IProduct {
+  _id: string;
+  name: string;
+  category: string;
+  brand: string;
+  stock_quantity: number;
+  selling_price: number;
+  status: string;
+  image: string;
+}
+
 export interface IProductDetail {
   _id: string;
   sku: string;
