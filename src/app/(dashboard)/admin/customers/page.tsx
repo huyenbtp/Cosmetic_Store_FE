@@ -1,12 +1,17 @@
 "use client"
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import CustomersTable from "./CustomersTable";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
+import CustomersTable from "./CustomersTable";
+import AddEditCustomerDialog from "./AddEditCustomerDialog";
+import { IAddEditCustomer } from "@/interfaces/customer.interface";
 
 export default function CustomersManagement() {
   const router = useRouter();
+  const [selectedItem, setSelectedItem] = useState<IAddEditCustomer | null>(null);
+  const [isAddEditDialogOpen, setIsAddEditDialogOpen] = useState(false);
 
   return (
     <div className="px-8 py-6 space-y-8">
@@ -14,7 +19,12 @@ export default function CustomersManagement() {
         <h1 className="text-2xl font-semibold">
           Customers Management
         </h1>
-        <Button onClick={() => { router.push("customers/new-customer"); }}>
+        <Button
+          onClick={() => {
+            setSelectedItem(null)
+            setIsAddEditDialogOpen(true)
+          }}
+        >
           <Plus className="w-4 h-4 mr-2" />
           Add New Customer
         </Button>
@@ -22,8 +32,17 @@ export default function CustomersManagement() {
 
       <CustomersTable
         onView={(id) => { router.push(`customers/${id}`) }}
-        onEdit={() => { }}
+        onEdit={(selected) => {
+          setSelectedItem(selected)
+          setIsAddEditDialogOpen(true)
+        }}
         onDelete={() => { }}
+      />
+
+      <AddEditCustomerDialog
+        initialData={selectedItem}
+        open={isAddEditDialogOpen}
+        setOpen={setIsAddEditDialogOpen}
       />
     </div>
   );

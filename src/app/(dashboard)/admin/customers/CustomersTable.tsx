@@ -11,7 +11,8 @@ import { Eye, Edit, Trash2, } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import SearchBar from "@/components/layout/SearchBar";
 import { Pagination } from "@/components/layout/Pagination";
-import { ICustomer } from "@/interfaces/customer.interface";
+import { ICustomer, IAddEditCustomer } from "@/interfaces/customer.interface";
+import dayjs from "dayjs";
 
 const mockCustomers: ICustomer[] = [
   {
@@ -73,7 +74,7 @@ export default function CustomersTable({
   onDelete,
 }: {
   onView: (id: string) => void;
-  onEdit: (id: string) => void;
+  onEdit: (data: IAddEditCustomer) => void;
   onDelete: (id: string) => void;
 }) {
   const searchParams = useSearchParams();
@@ -161,11 +162,7 @@ export default function CustomersTable({
                   </TableCell>
 
                   <TableCell className="w-1/5 text-muted-foreground">
-                    {new Date(customer.join_date).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric'
-                    })}
+                    {dayjs(customer.join_date).format("MMMM D, YYYY")}
                   </TableCell>
 
                   <TableCell className="w-1/5 font-medium">
@@ -183,7 +180,7 @@ export default function CustomersTable({
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => { onEdit(customer._id) }}
+                      onClick={() => { onEdit(customer) }}
                     >
                       <Edit className="w-4 h-4" />
                     </Button>

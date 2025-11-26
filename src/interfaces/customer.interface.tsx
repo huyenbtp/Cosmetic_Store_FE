@@ -24,3 +24,9 @@ export interface ICustomerDetail {
     payment_method: string;
   }[];
 }
+
+export interface IAddEditCustomer {
+  _id?: string;
+  name: string;
+  phone: string;
+}
