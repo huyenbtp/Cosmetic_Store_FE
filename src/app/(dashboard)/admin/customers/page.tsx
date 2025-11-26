@@ -21,7 +21,7 @@ export default function CustomersManagement() {
       </div>
 
       <CustomersTable
-        onView={() => { }}
+        onView={(id) => { router.push(`customers/${id}`) }}
         onEdit={() => { }}
         onDelete={() => { }}
       />
