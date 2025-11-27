@@ -34,7 +34,7 @@ export function Pagination({ total, page, limit, onLimitChange, item }: Paginati
           value={String(limit)}
           onValueChange={(value) => { onLimitChange(Number(value)) }}
         >
-          <SelectTrigger size="xs" className="w-16">
+          <SelectTrigger size="xs" className="w-16 h-7">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>

@@ -46,6 +46,14 @@
   --color-warning-foreground: var(--warning-foreground);
   --color-info: var(--info);
   --color-info-foreground: var(--info-foreground);
+  --color-success1: var(--success1);
+  --color-success1-foreground: var(--success1-foreground);
+  --color-error1: var(--error1);
+  --color-error1-foreground: var(--error1-foreground);
+  --color-warning1: var(--warning1);
+  --color-warning1-foreground: var(--warning1-foreground);
+  --color-info1: var(--info1);
+  --color-info1-foreground: var(--info1-foreground);
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -65,8 +73,8 @@
   --primary: #576d64;
   --primary-foreground: #ffffff;
 
-  --secondary: #e3ece6;
-  --secondary-foreground: #1a1a1a;
+  --secondary: #f8f5ee;
+  --secondary-foreground: #364153;
 
   --accent: #e9ebef;
   --accent-foreground: #030213;
@@ -115,6 +123,18 @@
 
   --info: #0288d1; /* xanh dương */
   --info-foreground: #ffffff;
+
+  --success1: #dcfce7;
+  --success1-foreground: #026630;
+
+  --error1: #ffe2e2;
+  --error1-foreground: #9f0712;
+
+  --warning1: #fef9c2;
+  --warning1-foreground: #894b00;
+
+  --info1: #dbeafe;
+  --info1-foreground: #193cb8;
 }
 
 /* ============================= */
@@ -178,6 +198,18 @@
 
   --info: #29b6f6; /* xanh dương sáng hơn */
   --info-foreground: #1a1a1a;
+  
+  --success1: #02b15a33;
+  --success1-foreground: #00ff77;
+
+  --error1: #fd000030;
+  --error1-foreground: #ffb0b0;
+
+  --warning1: #ffab0029;
+  --warning1-foreground: #ffd666;
+
+  --info1: #0099e067;
+  --info1-foreground: #03c4e6;
 }
 
 

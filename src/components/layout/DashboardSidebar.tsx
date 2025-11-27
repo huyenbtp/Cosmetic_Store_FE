@@ -24,7 +24,7 @@ interface DashboardSidebarProps {
 const navigationItems = {
   admin: [
     { href: "/admin/dashboard", label: "Dashboard", icon: Home },
-    { href: "/admin/cashiers", label: "Cashiers", icon: User },
+    { href: "/admin/staffs", label: "Staffs", icon: User },
     { href: "/admin/products", label: "Products", icon: Package },
     { href: "/admin/stock", label: "Stock", icon: Archive },
     { href: "/admin/customers", label: "Customers", icon: Users },
