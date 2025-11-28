@@ -15,11 +15,22 @@ export interface IStaffDetail {
   gender: string;
   dob: string;
   phone: string;
+  image: string;
   position: string;
   status: string;
   createdAt: string;
   updatedAt: string;
   account_id: string;
+  purchasesHandled: IStaffPurchasesHandled[];
+}
+
+export interface IStaffPurchasesHandled {
+  _id: string;
+  receipt_code: string;
+  customerName: string;
+  date: string;
+  final_amount: number;
+  payment_method: string;
 }
 
 export interface IAddEditStaff {
@@ -28,6 +39,7 @@ export interface IAddEditStaff {
   gender: string;
   dob: string;
   phone: string;
+  image: string;
   position: string;
   status: string;
   account_id: string;

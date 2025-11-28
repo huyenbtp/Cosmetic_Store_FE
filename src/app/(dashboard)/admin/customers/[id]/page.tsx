@@ -67,7 +67,7 @@ export default function ProductDetail() {
 
   return (
     <div className="px-8 py-6 space-y-6">
-      <div className="flex total_items-center gap-4">
+      <div className="flex items-center gap-4">
         <div className="flex-1 mr-10">
           <h1 className="text-2xl font-semibold">{data.name}</h1>
           <p className="text-muted-foreground">

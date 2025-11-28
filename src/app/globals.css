@@ -159,7 +159,7 @@
   --muted-foreground: #aab1bd;
 
   --destructive: #e57373; /* đỏ nhạt hơn để tránh quá gắt */
-  --border: #333333;
+  --border: #444444;
   --input: #2a2a2a;
   --ring: #8fa89b;
 
@@ -277,6 +277,10 @@
       font-weight: var(--font-weight-normal);
       line-height: 1.5;
     }
+  }
+
+  img {
+    height: fit-content;
   }
 }
 

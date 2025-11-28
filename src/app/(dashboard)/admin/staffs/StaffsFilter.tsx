@@ -76,7 +76,7 @@ export default function StaffsFilter() {
         <SelectContent>
           <SelectItem value="all">All status</SelectItem>
           {["active", "on_leave", "terminated"].map(value => (
-            <SelectItem value={value}>{getStaffStatusBadge(value)}</SelectItem>
+            <SelectItem key={value} value={value}>{getStaffStatusBadge(value)}</SelectItem>
           ))}
         </SelectContent>
       </Select>
