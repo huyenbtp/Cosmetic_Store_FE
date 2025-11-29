@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Eye, Edit, } from "lucide-react";
-import { IStaff, IAddEditStaff } from "@/interfaces/staff.interface";
+import { IStaff } from "@/interfaces/staff.interface";
 import dayjs from "dayjs";
 
 export function getStatusStyle(status: string) {
@@ -23,7 +23,7 @@ export default function StaffsTable({
 }: {
   data: IStaff[];
   onView: (id: string) => void;
-  onEdit: (data: IAddEditStaff) => void;
+  onEdit: (id: string) => void;
 }) {
 
   return (
@@ -46,7 +46,7 @@ export default function StaffsTable({
             <TableCell className="w-2/8 max-w-80 pr-8" title={staff.full_name}>
               <div className="flex items-center gap-3">
                 <Avatar className="h-10 w-10">
-                  <AvatarImage alt={staff.full_name} />
+                  <AvatarImage src={staff.image} alt={staff.full_name} />
                   <AvatarFallback className="bg-primary text-white">
                     {staff.full_name[0]}
                   </AvatarFallback>
@@ -102,6 +102,7 @@ export default function StaffsTable({
               <Button
                 variant="ghost"
                 size="sm"
+                title="View Detail"
                 onClick={() => { onView(staff._id) }}
               >
                 <Eye className="w-4 h-4" />
@@ -109,7 +110,8 @@ export default function StaffsTable({
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => { onEdit(staff) }}
+                title="Edit Staff"
+                onClick={() => { onEdit(staff._id) }}
               >
                 <Edit className="w-4 h-4" />
               </Button>

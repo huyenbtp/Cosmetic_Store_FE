@@ -11,8 +11,7 @@ import SearchBar from "@/components/layout/SearchBar";
 import StaffsFilter from "./StaffsFilter";
 import StaffsTable from "./StaffsTable";
 import { Pagination } from "@/components/layout/Pagination";
-//import AddEditStaffDialog from "./AddEditStaffDialog";
-import { IAddEditStaff, IStaff } from "@/interfaces/staff.interface";
+import { IStaff } from "@/interfaces/staff.interface";
 
 const mockStaffs: IStaff[] = [
   {
@@ -21,6 +20,7 @@ const mockStaffs: IStaff[] = [
     gender: "Female",
     dob: "1998-02-25T00:00:00",
     phone: "0123456789",
+    image: "https://picsum.photos/200/300?random=1",
     position: "Admin",
     status: "active",
     account_id: "1",
@@ -31,6 +31,7 @@ const mockStaffs: IStaff[] = [
     gender: "Male",
     dob: "1997-06-15T00:00:00",
     phone: "0123456789",
+    image: "https://picsum.photos/200/300?random=2",
     position: "Admin",
     status: "active",
     account_id: "2",
@@ -41,6 +42,7 @@ const mockStaffs: IStaff[] = [
     gender: "Female",
     dob: "1999-08-21T00:00:00",
     phone: "0123456789",
+    image: "https://picsum.photos/200/300?random=3",
     position: "Cashier",
     status: "active",
     account_id: "3",
@@ -51,6 +53,7 @@ const mockStaffs: IStaff[] = [
     gender: "Male",
     dob: "1996-09-24T00:00:00",
     phone: "0123456789",
+    image: "https://picsum.photos/200/300?random=4",
     position: "Cashier",
     status: "on_leave",
     account_id: "4",
@@ -61,6 +64,7 @@ const mockStaffs: IStaff[] = [
     gender: "Female",
     dob: "1995-11-22T00:00:00",
     phone: "0123456789",
+    image: "https://picsum.photos/200/300?random=5",
     position: "Cashier",
     status: "terminated",
     account_id: "5",
@@ -71,6 +75,7 @@ const mockStaffs: IStaff[] = [
     gender: "Male",
     dob: "1995-06-11T00:00:00",
     phone: "0123456789",
+    image: "https://picsum.photos/200/300?random=6",
     position: "Cashier",
     status: "active",
     account_id: "6",
@@ -81,6 +86,7 @@ const mockStaffs: IStaff[] = [
     gender: "Female",
     dob: "1998-04-05T00:00:00",
     phone: "0123456789",
+    image: "https://picsum.photos/200/300?random=7",
     position: "Cashier",
     status: "on_leave",
     account_id: "7",
@@ -103,8 +109,6 @@ export default function StaffsManagement() {
   const [searchBy, setSearchBy] = useState<StaffKey>("full_name");
   const [data, setData] = useState<IStaff[]>([]);
   const [total, setTotal] = useState(0);
-  const [selectedItem, setSelectedItem] = useState<IAddEditStaff | null>(null);
-  const [isAddEditDialogOpen, setIsAddEditDialogOpen] = useState(false);
 
   const fetchStaffs = async () => {
 
@@ -123,10 +127,7 @@ export default function StaffsManagement() {
           Staffs Management
         </h1>
         <Button
-          onClick={() => {
-            setSelectedItem(null)
-            setIsAddEditDialogOpen(true)
-          }}
+          onClick={() => { router.push("staffs/new")}}
         >
           <Plus className="w-4 h-4 mr-2" />
           Add New Staff
@@ -157,10 +158,7 @@ export default function StaffsManagement() {
             <StaffsTable
               data={data}
               onView={(id) => { router.push(`staffs/${id}`) }}
-              onEdit={(selected) => {
-                setSelectedItem(selected)
-                setIsAddEditDialogOpen(true)
-              }}
+              onEdit={(id) => { router.push(`staffs/${id}/edit`) }}
             />
           </Suspense>
 

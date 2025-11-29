@@ -4,6 +4,7 @@ export interface IStaff {
   gender: string;
   dob: string;
   phone: string;
+  image: string;
   position: string;
   status: string;
   account_id: string;

@@ -1,18 +1,18 @@
 "use client"
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Circle, CircleDot, Edit, Phone, Save, } from "lucide-react";
-import ProfileTab from "./ProfileTab";
-import { useRouter } from "next/navigation";
-import { IStaffDetail } from "@/interfaces/staff.interface";
-import dayjs from "dayjs";
-import { Card, CardContent } from "@/components/ui/card";
-import { ImageWithFallback } from "@/components/layout/ImageWithFallback";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ImageWithFallback } from "@/components/layout/ImageWithFallback";
+import { Edit, Phone, } from "lucide-react";
 import { getStaffStatusBadge } from "../StaffsFilter";
+import ProfileTab from "./ProfileTab";
 import PurchasesHandledTab from "./PurchasesHandledTab";
+import dayjs from "dayjs";
+import { useParams, useRouter } from "next/navigation";
+import { IStaffDetail } from "@/interfaces/staff.interface";
 
 const mockStaff: IStaffDetail = {
   _id: '1',
@@ -72,6 +72,7 @@ const mockStaff: IStaffDetail = {
 
 export default function ProductDetail() {
   const router = useRouter();
+  const { id } = useParams()
   const [data, setData] = useState<IStaffDetail>(mockStaff);
 
   return (
@@ -110,7 +111,7 @@ export default function ProductDetail() {
 
             <Button
               className="justify-start"
-              onClick={() => { }}
+              onClick={() => { router.push(`${id}/edit`) }}
             >
               <Edit className="w-4 h-4 mr-2" />
               Edit Staff
