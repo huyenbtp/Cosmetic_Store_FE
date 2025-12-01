@@ -13,9 +13,19 @@ import {
   User,
   ChevronLeft,
   ChevronRight,
+  LucideIcon,
+  Grid2X2,
+  BadgeCheck,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+
+export interface SidebarItem {
+  href?: string;
+  label: string;
+  icon: LucideIcon;
+  children?: SidebarItem[]; // submenu
+}
 
 interface DashboardSidebarProps {
   role: "admin" | "cashier";
@@ -25,8 +35,16 @@ const navigationItems = {
   admin: [
     { href: "/admin/dashboard", label: "Dashboard", icon: Home },
     { href: "/admin/staffs", label: "Staffs", icon: User },
-    { href: "/admin/products", label: "Products", icon: Package },
-    { href: "/admin/stock", label: "Stock", icon: Archive },
+    {
+      label: "Products",
+      icon: Package,
+      children: [
+        { href: "/admin/products", label: "All products", icon: Package },
+        { href: "/admin/categories", label: "Categories", icon: Grid2X2 },
+        { href: "/admin/brands", label: "Brands", icon: BadgeCheck },
+        { href: "/admin/stock", label: "Stock", icon: Archive },
+      ],
+    },
     { href: "/admin/customers", label: "Customers", icon: Users },
     { href: "/admin/promotions", label: "Promotions", icon: Percent },
     { href: "/admin/analytics", label: "Analytics", icon: TrendingUp },
@@ -41,16 +59,107 @@ const navigationItems = {
 
 export default function DashboardSidebar({ role }: DashboardSidebarProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [openMenus, setOpenMenus] = useState<string[]>([]);
   const items = navigationItems[role];
   const pathname = usePathname();
+
+  const toggleMenu = (label: string) => {
+    setOpenMenus((prev) =>
+      prev.includes(label)
+        ? prev.filter((l) => l !== label)
+        : [...prev, label]
+    );
+  };
+
+  const renderMenuItem = (item: SidebarItem) => {
+    const Icon = item.icon;
+    const hasChildren = item.children && item.children.length > 0;;
+    const isOpen = openMenus.includes(item.label);
+
+    if (!hasChildren) {
+      const isActive = pathname.startsWith(item.href ?? "");
+      return (
+        <Link
+          key={item.href}
+          href={item.href!}
+          className={cn(
+            "flex items-center gap-4 h-12 px-3 rounded-lg transition-colors",
+            isActive
+              ? "bg-sidebar-active text-sidebar-active-foreground"
+              : "text-sidebar-foreground hover:bg-sidebar-hover hover:text-sidebar-hover-foreground"
+          )}
+        >
+          <div className="w-6 h-6 flex-shrink-0 flex justify-center items-center">
+            <Icon className="w-5 h-5" />
+          </div>
+
+          {!isCollapsed && <span className="text-truncate">{item.label}</span>}
+        </Link>
+      );
+    }
+
+    return (
+      <div key={item.label}>
+        <button
+          onClick={() => toggleMenu(item.label)}
+          className={cn(
+            "w-full flex items-center gap-4 h-12 px-3 rounded-lg transition-colors",
+            "text-sidebar-foreground hover:bg-sidebar-hover hover:text-sidebar-hover-foreground"
+          )}
+        >
+          <div className="w-6 h-6 flex-shrink-0 flex justify-center items-center">
+            <Icon className="w-5 h-5" />
+          </div>
+          {!isCollapsed && (
+            <>
+              <span className="flex-1 text-left text-truncate">{item.label}</span>
+              <ChevronRight
+                style={{
+                  transform: isOpen ? "rotate(90deg)" : "rotate(0)",
+                  transition: "transform 200ms ease-in-out",
+                }}
+              />
+            </>
+          )}
+        </button>
+
+        {/* Sub menu */}
+        {isOpen && !isCollapsed && (
+          <div className="mt-1 space-y-1">
+            {item.children!.map((sub) => {
+              const SubIcon = sub.icon;
+              const isActive = pathname.startsWith(sub.href!);
+              return (
+                <Link
+                  key={sub.href}
+                  href={sub.href!}
+                  className={cn(
+                    "flex items-center gap-4 h-12 pl-6 py-3 rounded-lg transition-colors",
+                    isActive
+                      ? "bg-sidebar-active text-sidebar-active-foreground"
+                      : "text-sidebar-foreground hover:bg-sidebar-hover hover:text-sidebar-hover-foreground"
+                  )}
+                >
+                  <div className="w-6 h-6 flex-shrink-0 flex justify-center items-center">
+                    <SubIcon className="w-5 h-5" />
+                  </div>
+                  <span className="text-truncate">{sub.label}</span>
+                </Link>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <aside
       className={cn(
-        "bg-sidebar border-r  transition-all duration-300 flex-shrink-0",
+        "bg-sidebar border-r transition-all duration-300 flex-shrink-0",
         isCollapsed ? "w-20" : "w-65"
       )}
-      style={{ minHeight: '100vh' }}
+      style={{ minHeight: "100vh" }}
     >
       <div className="p-4">
         <div
@@ -59,9 +168,7 @@ export default function DashboardSidebar({ role }: DashboardSidebarProps) {
             isCollapsed ? "justify-center" : "justify-between"
           )}
         >
-          {!isCollapsed && (
-            <span className="text-2xl font-semibold ml-3">Hello</span>
-          )}
+          {!isCollapsed && <span className="text-2xl font-semibold ml-3">Hello</span>}
           <button
             className="rounded-full p-2.5 hover:bg-sidebar-hover"
             onClick={() => setIsCollapsed(!isCollapsed)}
@@ -74,29 +181,7 @@ export default function DashboardSidebar({ role }: DashboardSidebarProps) {
         </div>
 
         <nav className="space-y-2">
-          {items.map((item) => {
-            const Icon = item.icon;
-            const isActive = pathname.startsWith(item.href);
-
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  "flex items-center gap-4 h-12 px-3 rounded-lg transition-colors",
-                  isActive
-                    ? "bg-sidebar-active text-sidebar-active-foreground"
-                    : "text-sidebar-foreground hover:bg-sidebar-hover hover:text-sidebar-hover-foreground"
-                )}
-              >
-                <div className="w-6 h-6 flex-shrink-0 flex justify-center items-center">
-                  <Icon className="w-5 h-5" />
-                </div>
-
-                {!isCollapsed && <span className="text-truncate">{item.label}</span>}
-              </Link>
-            );
-          })}
+          {items.map((item) => renderMenuItem(item))}
         </nav>
       </div>
     </aside>
