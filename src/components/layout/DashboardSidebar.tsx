@@ -10,12 +10,16 @@ import {
   Percent,
   Bell,
   Home,
-  User,
   ChevronLeft,
   ChevronRight,
   LucideIcon,
   Grid2X2,
   BadgeCheck,
+  UserLock,
+  UserStar,
+  Settings2,
+  Handbag,
+  ShoppingBasket,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -34,20 +38,34 @@ interface DashboardSidebarProps {
 const navigationItems = {
   admin: [
     { href: "/admin/dashboard", label: "Dashboard", icon: Home },
-    { href: "/admin/staffs", label: "Staffs", icon: User },
     {
-      label: "Products",
+      label: "Inventory",
       icon: Package,
       children: [
-        { href: "/admin/products", label: "All products", icon: Package },
+        { href: "/admin/products", label: "Products", icon: Package },
         { href: "/admin/categories", label: "Categories", icon: Grid2X2 },
         { href: "/admin/brands", label: "Brands", icon: BadgeCheck },
         { href: "/admin/stock", label: "Stock", icon: Archive },
       ],
     },
-    { href: "/admin/customers", label: "Customers", icon: Users },
+    {
+      label: "Sales",
+      icon: Handbag,
+      children: [
+        { href: "/admin/pos-purchases", label: "POS Purchases", icon: ShoppingBasket },
+        { href: "/admin/customers", label: "Customers", icon: UserStar },
+      ],
+    },
     { href: "/admin/promotions", label: "Promotions", icon: Percent },
-    { href: "/admin/analytics", label: "Analytics", icon: TrendingUp },
+    { href: "/admin/staffs", label: "Staffs", icon: Users },
+    {
+      label: "Administration",
+      icon: Settings2,
+      children: [
+        { href: "/admin/user-accounts", label: "Users", icon: UserLock },
+        { href: "/admin/analytics", label: "Analytics", icon: TrendingUp },
+      ],
+    },
   ],
   cashier: [
     { href: "/cashier/dashboard", label: "Dashboard", icon: Home },
@@ -156,7 +174,7 @@ export default function DashboardSidebar({ role }: DashboardSidebarProps) {
   return (
     <aside
       className={cn(
-        "bg-sidebar border-r transition-all duration-300 flex-shrink-0",
+        "bg-sidebar border-r transition-all duration-300 flex-shrink-0 overflow-y-auto",
         isCollapsed ? "w-20" : "w-65"
       )}
       style={{ minHeight: "100vh" }}
