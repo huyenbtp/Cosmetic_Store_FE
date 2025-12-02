@@ -16,84 +16,112 @@ import { IStaff } from "@/interfaces/staff.interface";
 const mockStaffs: IStaff[] = [
   {
     _id: '1',
+    staff_code: "ADM-2025-0001",
     full_name: "Sarah Johnson",
-    gender: "Female",
-    dob: "1998-02-25T00:00:00",
     phone: "0123456789",
     image: "https://picsum.photos/200/300?random=1",
-    position: "Admin",
+    position: "admin",
     status: "active",
-    account_id: "1",
+    account: {
+      _id: '1',
+      username: "SarahJohnson",
+      role: "admin",
+      status: "active",
+    },
   },
   {
     _id: '2',
+    staff_code: "ADM-2025-0002",
     full_name: "Mike Chen",
-    gender: "Male",
-    dob: "1997-06-15T00:00:00",
     phone: "0123456789",
     image: "https://picsum.photos/200/300?random=2",
-    position: "Admin",
+    position: "admin",
     status: "active",
-    account_id: "2",
+    account: {
+      _id: '1',
+      username: "MikeChen",
+      role: "admin",
+      status: "active",
+    },
   },
   {
     _id: '3',
+    staff_code: "CSH-2025-0003",
     full_name: "Emma Wilson",
-    gender: "Female",
-    dob: "1999-08-21T00:00:00",
     phone: "0123456789",
     image: "https://picsum.photos/200/300?random=3",
-    position: "Cashier",
+    position: "cashier",
     status: "active",
-    account_id: "3",
+    account: {
+      _id: '1',
+      username: "EmmaWilson",
+      role: "cashier",
+      status: "active",
+    },
   },
   {
     _id: '4',
+    staff_code: "CSH-2025-0004",
     full_name: "David Brown",
-    gender: "Male",
-    dob: "1996-09-24T00:00:00",
     phone: "0123456789",
     image: "https://picsum.photos/200/300?random=4",
-    position: "Cashier",
+    position: "cashier",
     status: "on_leave",
-    account_id: "4",
+    account: {
+      _id: '1',
+      username: "DavidBrown",
+      role: "cashier",
+      status: "active",
+    },
   },
   {
     _id: '5',
+    staff_code: "CSH-2025-0005",
     full_name: "Lisa Garcia",
-    gender: "Female",
-    dob: "1995-11-22T00:00:00",
     phone: "0123456789",
     image: "https://picsum.photos/200/300?random=5",
-    position: "Cashier",
+    position: "cashier",
     status: "terminated",
-    account_id: "5",
+    account: {
+      _id: '1',
+      username: "SarahJohnson",
+      role: "cashier",
+      status: "inactive",
+    },
   },
   {
     _id: '6',
+    staff_code: "CSH-2025-0006",
     full_name: "James Taylor",
-    gender: "Male",
-    dob: "1995-06-11T00:00:00",
     phone: "0123456789",
     image: "https://picsum.photos/200/300?random=6",
-    position: "Cashier",
+    position: "cashier",
     status: "active",
-    account_id: "6",
+    account: {
+      _id: '1',
+      username: "JamesTaylor",
+      role: "cashier",
+      status: "active",
+    },
   },
   {
     _id: '7',
+    staff_code: "CSH-2025-0007",
     full_name: "Maria Rodriguez",
-    gender: "Female",
-    dob: "1998-04-05T00:00:00",
     phone: "0123456789",
     image: "https://picsum.photos/200/300?random=7",
-    position: "Cashier",
+    position: "cashier",
     status: "on_leave",
-    account_id: "7",
+    account: {
+      _id: '1',
+      username: "MariaRodriguez",
+      role: "cashier",
+      status: "active",
+    },
   }
 ];
 
-type StaffKey = "full_name" | "phone";
+type StaffKey = "staff_code" | "full_name" | "phone";
 
 export default function StaffsManagement() {
   const router = useRouter();
@@ -101,12 +129,12 @@ export default function StaffsManagement() {
 
   const page = Number(searchParams.get("page") || 1) || 1;
   const searchQuery = searchParams.get("q") || "";
-  const gender = searchParams.get("gender") || "";
-  const position = searchParams.get("position") || "";
-  const status = searchParams.get("status") || "";
+  const empStatus = searchParams.get("empStatus") || "";
+  const role = searchParams.get("role") || "";
+  const accStatus = searchParams.get("accStatus") || "";
 
   const [limit, setLimit] = useState(7);
-  const [searchBy, setSearchBy] = useState<StaffKey>("full_name");
+  const [searchBy, setSearchBy] = useState<StaffKey>("staff_code");
   const [data, setData] = useState<IStaff[]>([]);
   const [total, setTotal] = useState(0);
 
@@ -118,7 +146,7 @@ export default function StaffsManagement() {
     fetchStaffs();
     setData(mockStaffs.slice(0, limit)) //sau khi fetch data thật thì xóa dòng này đi
     setTotal(mockStaffs.length)
-  }, [page, limit, searchQuery, searchBy, gender, position, status]);
+  }, [page, limit, searchQuery, searchBy, empStatus, role, accStatus]);
 
   return (
     <div className="px-8 py-6 space-y-8">
@@ -127,7 +155,7 @@ export default function StaffsManagement() {
           Staffs Management
         </h1>
         <Button
-          onClick={() => { router.push("staffs/new")}}
+          onClick={() => { router.push("staffs/new") }}
         >
           <Plus className="w-4 h-4 mr-2" />
           Add New Staff
@@ -144,6 +172,7 @@ export default function StaffsManagement() {
                 <SelectValue placeholder="Search by ..." />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="staff_code">Staff code</SelectItem>
                 <SelectItem value="full_name">Staff name</SelectItem>
                 <SelectItem value="phone">Phone number</SelectItem>
               </SelectContent>

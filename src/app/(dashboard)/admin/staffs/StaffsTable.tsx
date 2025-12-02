@@ -4,12 +4,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Eye, Edit, } from "lucide-react";
 import { IStaff } from "@/interfaces/staff.interface";
-import dayjs from "dayjs";
 
 export function getStatusStyle(status: string) {
   if (status === "active") {
     return "bg-success1 text-success1-foreground"
-  } else if (status === "on_leave") {
+  } else if (status === "on_leave" || status === "inactive") {
     return "bg-warning1 text-warning1-foreground"
   } else if (status === "terminated") {
     return "bg-error1 text-error1-foreground"
@@ -30,12 +29,12 @@ export default function StaffsTable({
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead className="text-center">Staff</TableHead>
-          <TableHead>Gender</TableHead>
-          <TableHead>Dob</TableHead>
+          <TableHead>Staff Code</TableHead>
+          <TableHead>Staff Full Name</TableHead>
           <TableHead>Phone</TableHead>
-          <TableHead>Position</TableHead>
-          <TableHead>Status</TableHead>
+          <TableHead>Employee Status</TableHead>
+          <TableHead>Role</TableHead>
+          <TableHead>Account Status</TableHead>
           <TableHead className="text-center">Actions</TableHead>
         </TableRow>
       </TableHeader>
@@ -43,7 +42,11 @@ export default function StaffsTable({
       <TableBody>
         {data.length > 0 ? (data.map((staff) => (
           <TableRow key={staff._id}>
-            <TableCell className="w-2/8 max-w-80 pr-8" title={staff.full_name}>
+            <TableCell className="w-14/100 ">
+              {staff.staff_code}
+            </TableCell>
+
+            <TableCell className="w-22/100 max-w-80 pr-8" title={staff.full_name}>
               <div className="flex items-center gap-3">
                 <Avatar className="h-10 w-10">
                   <AvatarImage src={staff.image} alt={staff.full_name} />
@@ -55,33 +58,11 @@ export default function StaffsTable({
               </div>
             </TableCell>
 
-            <TableCell className="w-1/8 text-muted-foreground">
-              {staff.gender}
-            </TableCell>
-            <TableCell className="w-1/8 text-muted-foreground">
-              {dayjs(staff.dob).format("DD/MM/YYYY")}
-            </TableCell>
-            <TableCell className="w-1/8 font-medium">
+            <TableCell className="w-12/100 ">
               {staff.phone}
             </TableCell>
 
-            <TableCell className="w-1/8 font-medium">
-              <Select
-                defaultValue={staff.position}
-                value={staff.position}
-                onValueChange={() => { }}
-              >
-                <SelectTrigger size="xs" className="w-fit bg-secondary text-primary text-xs shadow-none">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Admin">Admin</SelectItem>
-                  <SelectItem value="Cashier">Cashier</SelectItem>
-                </SelectContent>
-              </Select>
-            </TableCell>
-
-            <TableCell className="w-1/8 font-medium">
+            <TableCell className="w-14/100 font-medium">
               <Select
                 defaultValue={staff.status}
                 value={staff.status}
@@ -94,6 +75,38 @@ export default function StaffsTable({
                   <SelectItem value="active" >Active</SelectItem>
                   <SelectItem value="on_leave">On leave</SelectItem>
                   <SelectItem value="terminated">Terminated</SelectItem>
+                </SelectContent>
+              </Select>
+            </TableCell>
+
+            <TableCell className="w-14/100 font-medium ">
+              <Select
+                defaultValue={staff.account.role}
+                value={staff.account.role}
+                onValueChange={() => { }}
+              >
+                <SelectTrigger size="xs" className="inline-flex w-fit bg-secondary text-primary text-xs shadow-none">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="admin">Admin</SelectItem>
+                  <SelectItem value="cashier">Cashier</SelectItem>
+                </SelectContent>
+              </Select>
+            </TableCell>
+
+            <TableCell className="w-12/100 font-medium">
+              <Select
+                defaultValue={staff.account.status}
+                value={staff.account.status}
+                onValueChange={() => { }}
+              >
+                <SelectTrigger size="xs" className={`w-fit text-xs shadow-none ${getStatusStyle(staff.account.status)}`}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="active" >Active</SelectItem>
+                  <SelectItem value="inactive">In Active</SelectItem>
                 </SelectContent>
               </Select>
             </TableCell>

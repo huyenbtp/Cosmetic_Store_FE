@@ -3,24 +3,29 @@
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import StaffForm from "../../StaffForm";
-import { IAddEditStaff, IStaff } from "@/interfaces/staff.interface";
+import { IAddEditStaff } from "@/interfaces/staff.interface";
 
-const mockStaff: IStaff = {
+const mockStaff: IAddEditStaff = {
   _id: '1',
   full_name: "Sarah Johnson",
-  gender: "Female",
+  gender: "female",
   dob: "1998-02-25T00:00:00",
   phone: "0123456789",
   image: "https://picsum.photos/200/300",
-  position: "Cashier",
+  position: "cashier",
   status: "active",
-  account_id: "1",
+  account: {
+    _id: "1",
+    username: "SarahJohnson",
+    role: "cashier",
+    status: "active",
+  },
 };
 
 export default function EditStaff() {
   const router = useRouter();
-    const { id } = useParams();
-    const [data, setData] = useState<IStaff>(mockStaff);
+  const { id } = useParams();
+  const [data, setData] = useState<IAddEditStaff>(mockStaff);
 
   const handleSave = async (data: IAddEditStaff) => {
     router.replace("./")

@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableHeader, TableHead, TableRow, TableBody, TableCell } from "@/components/ui/table";
 import { IStaffPurchasesHandled } from "@/interfaces/staff.interface";
+import { capitalizeWords } from "@/lib/utils";
 import dayjs from "dayjs";
 import { ChevronRight } from "lucide-react";
 
@@ -40,7 +41,7 @@ export default function PurchasesHandledTab({
                   {item.final_amount.toLocaleString()} đ
                 </TableCell>
                 <TableCell className="w-2/9 text-center text-muted-foreground">
-                  {item.payment_method}
+                  {capitalizeWords(item.payment_method)}
                 </TableCell>
                 <TableCell className="w-1/9 text-center">
                   <Button variant="ghost" size="sm">

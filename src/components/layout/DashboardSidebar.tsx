@@ -62,7 +62,6 @@ const navigationItems = {
       label: "Administration",
       icon: Settings2,
       children: [
-        { href: "/admin/user-accounts", label: "Users", icon: UserLock },
         { href: "/admin/analytics", label: "Analytics", icon: TrendingUp },
       ],
     },

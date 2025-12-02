@@ -1,14 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ImageWithFallback } from "@/components/layout/ImageWithFallback";
-import { Image, Save, UploadCloud } from "lucide-react";
+import { Save } from "lucide-react";
 import { getStaffStatusBadge } from "./StaffsFilter";
 import dayjs from "dayjs";
-import { IAddEditStaff, IStaff } from "@/interfaces/staff.interface";
+import { IAddEditStaff } from "@/interfaces/staff.interface";
 import ImageUploader from "@/components/layout/ImageUploader";
 
 const NullStaff: IAddEditStaff = {
@@ -19,17 +18,28 @@ const NullStaff: IAddEditStaff = {
   image: "",
   position: "",
   status: "",
-  account_id: "",
+  account: {
+    username: "",
+    password: "",
+    role: "",
+    status: "",
+  },
 };
 
 interface StaffFormProps {
   mode: "create" | "edit";
-  initialData?: IStaff;
+  initialData?: IAddEditStaff;
   onSubmit: (data: IAddEditStaff) => void;
 }
 
 export default function StaffForm({ mode, initialData, onSubmit }: StaffFormProps) {
   const [data, setData] = useState(initialData ?? NullStaff);
+  const [accountData, setAccountData] = useState(data.account);
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  useEffect(() => {
+    setData({ ...data, account: accountData });
+  }, [accountData]);
 
   return (
     <div className="h-full flex flex-col px-8 py-6 space-y-6">
@@ -85,8 +95,8 @@ export default function StaffForm({ mode, initialData, onSubmit }: StaffFormProp
                     <SelectValue placeholder="Select Gender" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Male">Male</SelectItem>
-                    <SelectItem value="Female">Female</SelectItem>
+                    <SelectItem value="male">Male</SelectItem>
+                    <SelectItem value="female">Female</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -127,9 +137,7 @@ export default function StaffForm({ mode, initialData, onSubmit }: StaffFormProp
                   className="h-12"
                 />
               </div>
-            </div>
 
-            <div className="space-y-6">
               <div>
                 <Label
                   htmlFor="staff-status"
@@ -137,14 +145,14 @@ export default function StaffForm({ mode, initialData, onSubmit }: StaffFormProp
                     ${data.status.trim() === "" ? "opacity-0 h-0 -translate-y-2" : "opacity-100 mb-2"}
                   `}
                 >
-                  Status
+                  Employment Status
                 </Label>
                 <Select
                   value={data.status}
                   onValueChange={(value) => setData({ ...data, status: value })}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select Status" />
+                    <SelectValue placeholder="Select Employment Status" />
                   </SelectTrigger>
                   <SelectContent>
                     {["active", "on_leave", "terminated"].map(value => (
@@ -171,9 +179,116 @@ export default function StaffForm({ mode, initialData, onSubmit }: StaffFormProp
                     <SelectValue placeholder="Select Position" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All position</SelectItem>
-                    <SelectItem value="Admin">Admin</SelectItem>
-                    <SelectItem value="Cashier">Cashier</SelectItem>
+                    <SelectItem value="admin">Admin</SelectItem>
+                    <SelectItem value="cashier">Cashier</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="space-y-6">
+              <div>
+                <Label
+                  htmlFor="account-username"
+                  className={`transition-all text-muted-foreground
+                    ${accountData.username.trim() === "" ? "opacity-0 h-0 -translate-y-2" : "opacity-100 mb-2"}
+                  `}
+                >
+                  Username
+                </Label>
+                <Input
+                  id="account-username"
+                  value={accountData.username}
+                  onChange={(e) => setAccountData({ ...accountData, username: e.target.value })}
+                  placeholder="Account's Username"
+                  className="h-12"
+                />
+              </div>
+              {mode === "create" &&
+                <>
+                  <div>
+                    <Label
+                      htmlFor="account-password"
+                      className={`transition-all text-muted-foreground
+                        ${(!accountData.password || accountData.password.trim() === "") ? "opacity-0 h-0 -translate-y-2" : "opacity-100 mb-2"}
+                      `}
+                    >
+                      Password
+                    </Label>
+                    <Input
+                      id="account-password"
+                      type="password"
+                      value={accountData.password}
+                      onChange={(e) => setAccountData({ ...accountData, password: e.target.value })}
+                      placeholder="Password"
+                      className="h-12"
+                    />
+                  </div>
+
+                  <div>
+                    <Label
+                      htmlFor="account-confirm-password"
+                      className={`transition-all text-muted-foreground
+                        ${confirmPassword.trim() === "" ? "opacity-0 h-0 -translate-y-2" : "opacity-100 mb-2"}
+                      `}
+                    >
+                      Confirm Password
+                    </Label>
+                    <Input
+                      id="account-confirm-password"
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="Confirm Password"
+                      className="h-12"
+                    />
+                  </div>
+                </>
+              }
+
+              <div>
+                <Label
+                  htmlFor="account-role"
+                  className={`transition-all text-muted-foreground
+                    ${accountData.role.trim() === "" ? "opacity-0 h-0 -translate-y-2" : "opacity-100 mb-2"}
+                  `}
+                >
+                  Role
+                </Label>
+                <Select
+                  value={accountData.role}
+                  onValueChange={(value) => setAccountData({ ...accountData, role: value })}
+                >
+                  <SelectTrigger size="default" className="w-full">
+                    <SelectValue placeholder="Select Role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="admin">Admin</SelectItem>
+                    <SelectItem value="cashier">Cashier</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label
+                  htmlFor="account-status"
+                  className={`transition-all text-muted-foreground
+                    ${accountData.status.trim() === "" ? "opacity-0 h-0 -translate-y-2" : "opacity-100 mb-2"}
+                  `}
+                >
+                  Account Status
+                </Label>
+                <Select
+                  value={accountData.status}
+                  onValueChange={(value) => setAccountData({ ...accountData, status: value })}
+                >
+                  <SelectTrigger size="default" className="w-full">
+                    <SelectValue placeholder="Select Account Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {["active", "inactive"].map(value => (
+                      <SelectItem key={value} value={value}>{getStaffStatusBadge(value)}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>

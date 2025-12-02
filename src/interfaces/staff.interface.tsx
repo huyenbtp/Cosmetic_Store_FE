@@ -1,17 +1,19 @@
+import { IAddEditUserAccount, IUserAccount, IUserAccountDetail } from "./userAccount.interface";
+
 export interface IStaff {
   _id: string;
+  staff_code: string;
   full_name: string;
-  gender: string;
-  dob: string;
   phone: string;
   image: string;
   position: string;
   status: string;
-  account_id: string;
+  account: IUserAccount;
 }
 
 export interface IStaffDetail {
   _id: string;
+  staff_code: string;
   full_name: string;
   gender: string;
   dob: string;
@@ -21,7 +23,7 @@ export interface IStaffDetail {
   status: string;
   createdAt: string;
   updatedAt: string;
-  account_id: string;
+  account: IUserAccountDetail;
   purchasesHandled: IStaffPurchasesHandled[];
 }
 
@@ -36,6 +38,7 @@ export interface IStaffPurchasesHandled {
 
 export interface IAddEditStaff {
   _id?: string;
+  staff_code?: string;
   full_name: string;
   gender: string;
   dob: string;
@@ -43,5 +46,5 @@ export interface IAddEditStaff {
   image: string;
   position: string;
   status: string;
-  account_id: string;
+  account: IAddEditUserAccount;
 }
