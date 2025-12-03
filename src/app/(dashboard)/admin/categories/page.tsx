@@ -2,13 +2,14 @@
 
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Edit, Eye, Plus, Trash2 } from "lucide-react"
+import { Plus } from "lucide-react"
 import { ICategory } from "@/interfaces/category.interface"
-import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
 import CategoriesTree from "./CategoriesTree"
+import AddEditCategoryDialog from "./AddEditCategoryDialog"
+import CategoryDetailCard from "./CategoryDetailCard"
 
 const mockCategories: ICategory[] = [
   {
@@ -121,16 +122,16 @@ async function fetchCategories() {
 }
 
 export default function CategoriesPage() {
+  const router = useRouter();
   const [data, setData] = useState<ICategory[]>([]);
+  const [search, setSearch] = useState("");
+  const [selected, setSelected] = useState<ICategory | null>(null);
+  const [isAddEditDialogOpen, setIsAddEditDialogOpen] = useState(false);
+  const [selectedParentId, setSelectedParentId] = useState<any>(null);
 
   useEffect(() => {
     fetchCategories().then(setData)
   }, [])
-
-  const router = useRouter();
-  const [search, setSearch] = useState("");
-  const [selected, setSelected] = useState<ICategory | null>(null);
-
 
   return (
     <div className="h-full flex flex-col px-8 py-6 space-y-6">
@@ -143,7 +144,7 @@ export default function CategoriesPage() {
       <Card className="flex-1 overflow-hidden">
         <CardContent className="flex flex-1 overflow-hidden">
           {/* left: categories tree */}
-          <div className="flex flex-col flex-2 border-r pr-8">
+          <div className="flex flex-col flex-2 pr-8">
             <Input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -155,70 +156,50 @@ export default function CategoriesPage() {
                 data={data}
                 search={search}
                 selected={selected}
-                setSelected={setSelected}
+                setSelected={(value) => {
+                  setSelected(value);
+                }}
               />
             </div>
-            <Button>
+            <Button
+              onClick={() => {
+                setSelectedParentId(null);
+                setIsAddEditDialogOpen(true);
+              }}
+            >
               <Plus />
               Add New Category
             </Button>
           </div>
 
           {/* right: detail panel */}
-          <div className="flex-3 p-6 px-8 pl-14 ">
+          <div className="flex-3 p-6 px-8 pl-14 border-l">
             {!selected ? (
               <p className="text-muted-foreground">
                 Select a category to view details and edit.
               </p>
             ) : (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Category Details</CardTitle>
-                </CardHeader>
-
-                <CardContent className="space-y-4">
-                  <div>
-                    <label className="text-sm font-medium">Name</label>
-                    <Input value={selected.name} readOnly />
-                  </div>
-
-                  <div>
-                    <label className="text-sm font-medium">Slug</label>
-                    <Input value={selected.slug} readOnly />
-                  </div>
-
-                  <div>
-                    <label className="text-sm font-medium">Parent Category Name</label>
-                    <Input value={selected.parent_id ?? "None"} readOnly />
-                  </div>
-
-                  <div className="flex gap-3 mt-12">
-                    <Button variant="default">
-                      <Edit />
-                      Save Changes
-                    </Button>
-                    <Button variant="outline">
-                      <Plus />
-                      Add Child
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => router.push(`products?category=${selected.slug}&page=1`)}
-                    >
-                      <Eye />
-                      View All Products
-                    </Button>
-                    <Button variant="destructive">
-                      <Trash2 />
-                      Delete
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+              <CategoryDetailCard
+                data={selected}
+                categoryList={data}
+                onSaveChanges={() => { }}
+                onAddChild={() => {
+                  setSelectedParentId(selected._id);
+                  setIsAddEditDialogOpen(true);
+                }}
+                onViewProducts={() => { router.push(`products?category=${selected.slug}&page=1`) }}
+              />
             )}
           </div>
         </CardContent>
       </Card>
+
+      <AddEditCategoryDialog
+        parentId={selectedParentId}
+        categoryList={data}
+        open={isAddEditDialogOpen}
+        setOpen={setIsAddEditDialogOpen}
+      />
     </div>
   );
 }

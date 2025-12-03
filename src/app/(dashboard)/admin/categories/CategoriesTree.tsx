@@ -1,6 +1,5 @@
 "use client"
 
-import { useEffect, useState } from "react";
 import { ICategory } from "@/interfaces/category.interface";
 import { cn } from "@/lib/utils";
 
@@ -60,7 +59,8 @@ export default function CategoriesTree({ data, search, selected, setSelected }: 
             {c.name}
           </div>
         ))
-        : rootNodes.map((node) => renderTree(node))}
+        : rootNodes.map((node) => renderTree(node))
+      }
     </>
   );
 }
