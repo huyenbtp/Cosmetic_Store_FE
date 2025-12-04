@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useRouter, useSearchParams } from "next/navigation";
 import { updateQueryParams } from "@/lib/utils";
@@ -17,19 +18,22 @@ export default function OrdersFilter() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const dateRange = {
+  const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: searchParams.get("date_from") ? new Date(searchParams.get("date_from") as string) : undefined,
     to: searchParams.get("date_to") ? new Date(searchParams.get("date_to") as string) : undefined,
-  };
+  });
   const payment_method = searchParams.get("pmMtd") || "";
   const status = searchParams.get("status") || "";
 
-  const handleDateRangeChange = (r: DateRange | undefined) => {
-    if (!r?.from || !r?.to) return;
+  const handleDateRangeChange = (range: DateRange | undefined) => {
+    setDateRange(range);
+
+    const from = range?.from?.toISOString();
+    const to = range?.to?.toISOString();
 
     const newQuery = updateQueryParams(searchParams, {
-      date_from: r.from.toISOString(),
-      date_to: r.to.toISOString(),
+      date_from: from || "",
+      date_to: to || "",
       page: 1,
     });
 
@@ -56,7 +60,8 @@ export default function OrdersFilter() {
     <>
       <DateRangePicker
         initialDateRange={dateRange}
-        onChange={handleDateRangeChange} 
+        onChange={handleDateRangeChange}
+        disabledDays={{ after: new Date() }}
       />
 
       <Select value={payment_method} onValueChange={(value) => handlePaymentMethodChange(value)}>

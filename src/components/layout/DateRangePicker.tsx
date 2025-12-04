@@ -1,6 +1,6 @@
 "use client"
 
-import * as React from "react"
+import { useEffect, useState } from "react"
 import { CalendarIcon } from "lucide-react"
 import { type DateRange } from "react-day-picker"
 
@@ -15,11 +15,17 @@ import {
 export function DateRangePicker({
   initialDateRange,
   onChange,
+  disabledDays,
 }: {
-  initialDateRange: DateRange
-  onChange: (r: DateRange | undefined) => void
+  initialDateRange: DateRange | undefined;
+  onChange: (r: DateRange | undefined) => void;
+  disabledDays?: { before: Date } | { after: Date } | { before: Date; after: Date };
 }) {
-  const [range, setRange] = React.useState<DateRange | undefined>(initialDateRange)
+  const [range, setRange] = useState<DateRange | undefined>(initialDateRange)
+
+  useEffect(() => {
+    setRange(initialDateRange)
+  }, [initialDateRange]);
 
   return (
     <Popover>
@@ -39,6 +45,7 @@ export function DateRangePicker({
           selected={range}
           captionLayout="dropdown"
           onSelect={onChange}
+          disabled={disabledDays}
         />
       </PopoverContent>
     </Popover>
