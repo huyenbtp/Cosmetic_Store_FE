@@ -1,4 +1,4 @@
-export interface IOrderDetail {
+export interface IOrderItem {
   _id: string;
   order_id: string;
   product_id: string;
@@ -12,7 +12,7 @@ export interface IOrderDetail {
   price: number;
 }
 
-export interface IAddEditOrderDetail {
+export interface IAddEditOrderItem {
   _id?: string;
   order_id?: string;
   product_id: string;
