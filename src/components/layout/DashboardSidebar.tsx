@@ -52,7 +52,7 @@ const navigationItems = {
       label: "Sales",
       icon: Handbag,
       children: [
-        { href: "/admin/pos-purchases", label: "POS Purchases", icon: ShoppingBasket },
+        { href: "/admin/pos-orders", label: "POS Orders", icon: ShoppingBasket },
         { href: "/admin/customers", label: "Customers", icon: UserStar },
       ],
     },
