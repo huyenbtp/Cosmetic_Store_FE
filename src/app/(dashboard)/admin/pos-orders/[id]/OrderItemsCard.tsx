@@ -51,11 +51,11 @@ export default function OrderItemsCard({
                 </TableCell>
 
                 <TableCell className="w-1/8 text-right">
-                  {item.price.toLocaleString()} đ
+                  {item.unit_price.toLocaleString()} đ
                 </TableCell>
                 
                 <TableCell className="text-right font-medium">
-                  {(item.price * item.quantity).toLocaleString()} đ
+                  {(item.unit_price * item.quantity).toLocaleString()} đ
                 </TableCell>
               </TableRow>
             ))}

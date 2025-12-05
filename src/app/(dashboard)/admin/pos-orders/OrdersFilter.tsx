@@ -19,8 +19,8 @@ export default function OrdersFilter() {
   const searchParams = useSearchParams();
 
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
-    from: searchParams.get("fromDate") ? new Date(searchParams.get("date_from") as string) : undefined,
-    to: searchParams.get("toDate") ? new Date(searchParams.get("date_to") as string) : undefined,
+    from: searchParams.get("fromDate") ? new Date(searchParams.get("fromDate") as string) : undefined,
+    to: searchParams.get("toDate") ? new Date(searchParams.get("toDate") as string) : undefined,
   });
   const payment_method = searchParams.get("pmMtd") || "";
   const status = searchParams.get("status") || "";

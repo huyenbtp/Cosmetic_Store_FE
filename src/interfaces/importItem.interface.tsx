@@ -1,6 +1,6 @@
-export interface IOrderItem {
+export interface IImportItem {
   _id: string;
-  order_id: string;
+  import_id: string;
   product_id: string;
   product: {
     _id: string;
@@ -12,9 +12,9 @@ export interface IOrderItem {
   unit_price: number;
 }
 
-export interface IAddEditOrderItem {
+export interface IAddEditImportItem {
   _id?: string;
-  order_id?: string;
+  import_id?: string;
   product_id: string;
   quantity: number;
   unit_price: number;

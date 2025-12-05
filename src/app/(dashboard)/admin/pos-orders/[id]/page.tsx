@@ -37,7 +37,7 @@ const mockOrder: IOrderDetail = {
         sku: "SUN-ANE-251204215107",
         image: "https://picsum.photos/200/300",
       },
-      price: 480000,
+      unit_price: 480000,
       quantity: 1,
     },
     {
@@ -50,7 +50,7 @@ const mockOrder: IOrderDetail = {
         sku: "CLS-INN-251204215107",
         image: "https://picsum.photos/200/300",
       },
-      price: 210000,
+      unit_price: 210000,
       quantity: 1,
     },
     {
@@ -63,7 +63,7 @@ const mockOrder: IOrderDetail = {
         sku: "MAK-FIT-251204215107",
         image: "https://picsum.photos/200/300",
       },
-      price: 295000,
+      unit_price: 295000,
       quantity: 1,
     }
   ],

@@ -129,8 +129,8 @@ export default function OrdersManagement() {
 
   const page = Number(searchParams.get("page") || 1) || 1;
   const searchQuery = searchParams.get("q") || "";
-  const dateFrom = searchParams.get("date_from") || "";
-  const dateTo = searchParams.get("date_to") || "";
+  const fromDate = searchParams.get("fromDate") || "";
+  const toDate = searchParams.get("toDate") || "";
   const payment_method = searchParams.get("pmMtd") || "";
   const status = searchParams.get("status") || "";
 
@@ -147,7 +147,7 @@ export default function OrdersManagement() {
     fetchOrders();
     setData(mockOrders.slice(0, limit)) //sau khi fetch data thật thì xóa dòng này đi
     setTotal(mockOrders.length)
-  }, [page, limit, searchQuery, searchBy, dateFrom, dateTo, payment_method, status]);
+  }, [page, limit, searchQuery, searchBy, fromDate, toDate, payment_method, status]);
 
   return (
     <div className="px-8 py-6 space-y-8">
@@ -192,7 +192,7 @@ export default function OrdersManagement() {
             />
           </Suspense>
 
-          <Pagination total={total} page={page} limit={limit} onLimitChange={setLimit} item="staff" />
+          <Pagination total={total} page={page} limit={limit} onLimitChange={setLimit} item="order" />
 
         </CardContent>
       </Card>

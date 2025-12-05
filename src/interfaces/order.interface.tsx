@@ -24,7 +24,7 @@ export interface IOrderDetail {
     _id: string;
     staff_code: string;
     full_name: string;
-  },
+  };
   customer_id: string | null;
   customer: {
     _id: string;
@@ -39,7 +39,7 @@ export interface IOrderDetail {
   total: number;
   payment_method: string;
   payment_status: string;
-  note: string
+  note: string;
   createdAt: string;
   updatedAt: string;
 }

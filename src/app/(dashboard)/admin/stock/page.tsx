@@ -7,6 +7,7 @@ import StatCards from "./StatCards";
 import LowStockCard from "./LowStockCard";
 import OutOfStockCard from "./OutOfStockCard";
 import { IStockStats, ILowStockItem, IOutOfStockItem, } from "@/interfaces/stock.interface";
+import { useRouter } from "next/navigation";
 
 const stats: IStockStats = {
   totalItems: 103,
@@ -43,6 +44,7 @@ const mockData: IStockManagementData = {
 };
 
 export default function StockManagement() {
+  const router = useRouter();
   const [data, setData] = useState<IStockManagementData>();
 
   const fetchData = async () => {
@@ -61,7 +63,10 @@ export default function StockManagement() {
           Stock Management
         </h1>
         <div className="flex gap-4">
-          <Button variant="outline">
+          <Button
+            variant="outline"
+            onClick={() => router.push("stock/import-history")}
+          >
             <History className="w-4 h-4 mr-2" />
             View Import History
           </Button>
