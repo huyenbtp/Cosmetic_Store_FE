@@ -19,8 +19,8 @@ export default function OrdersFilter() {
   const searchParams = useSearchParams();
 
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
-    from: searchParams.get("date_from") ? new Date(searchParams.get("date_from") as string) : undefined,
-    to: searchParams.get("date_to") ? new Date(searchParams.get("date_to") as string) : undefined,
+    from: searchParams.get("fromDate") ? new Date(searchParams.get("date_from") as string) : undefined,
+    to: searchParams.get("toDate") ? new Date(searchParams.get("date_to") as string) : undefined,
   });
   const payment_method = searchParams.get("pmMtd") || "";
   const status = searchParams.get("status") || "";
@@ -32,8 +32,8 @@ export default function OrdersFilter() {
     const to = range?.to?.toISOString();
 
     const newQuery = updateQueryParams(searchParams, {
-      date_from: from || "",
-      date_to: to || "",
+      fromDate: from || "",
+      toDate: to || "",
       page: 1,
     });
 

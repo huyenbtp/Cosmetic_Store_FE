@@ -1,9 +1,7 @@
 "use client"
 
-import { useEffect, useState } from "react"
 import { CalendarIcon } from "lucide-react"
 import { type DateRange } from "react-day-picker"
-
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import {
@@ -21,18 +19,13 @@ export function DateRangePicker({
   onChange: (r: DateRange | undefined) => void;
   disabledDays?: { before: Date } | { after: Date } | { before: Date; after: Date };
 }) {
-  const [range, setRange] = useState<DateRange | undefined>(initialDateRange)
-
-  useEffect(() => {
-    setRange(initialDateRange)
-  }, [initialDateRange]);
 
   return (
     <Popover>
       <PopoverTrigger asChild>
         <Button variant="input" className="gap-3 font-normal">
-          {range?.from && range?.to
-            ? `${range.from.toLocaleDateString()} - ${range.to.toLocaleDateString()}`
+          {initialDateRange?.from && initialDateRange?.to
+            ? `${initialDateRange.from.toLocaleDateString()} - ${initialDateRange.to.toLocaleDateString()}`
             : <span className="text-muted-foreground">Date Range</span>
           }
           <CalendarIcon />
@@ -42,7 +35,7 @@ export function DateRangePicker({
       <PopoverContent className="w-auto overflow-hidden p-0" align="center">
         <Calendar
           mode="range"
-          selected={range}
+          selected={initialDateRange}
           captionLayout="dropdown"
           onSelect={onChange}
           disabled={disabledDays}
