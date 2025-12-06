@@ -23,7 +23,7 @@ const mockImports: IImport[] = [
       full_name: "Sarah Johnson",
       staff_code: "ADM-2025-0001",
     },
-    items_updated: 3,
+    products_updated: 3,
     items_imported: 100,
     total_amount: 20000000,
     createdAt: "2025-11-15T09:30:00",
@@ -37,7 +37,7 @@ const mockImports: IImport[] = [
       full_name: "Mike Chen",
       staff_code: "ADM-2025-0001",
     },
-    items_updated: 1,
+    products_updated: 1,
     items_imported: 100,
     total_amount: 15600000,
     createdAt: "2025-11-14T09:32:04",
@@ -51,7 +51,7 @@ const mockImports: IImport[] = [
       full_name: "Emma Wilson",
       staff_code: "ADM-2025-0001",
     },
-    items_updated: 4,
+    products_updated: 4,
     items_imported: 100,
     total_amount: 25000000,
     createdAt: "2025-11-14T09:24:13",
@@ -65,7 +65,7 @@ const mockImports: IImport[] = [
       full_name: "David Brown",
       staff_code: "ADM-2025-0001",
     },
-    items_updated: 5,
+    products_updated: 5,
     items_imported: 150,
     total_amount: 32000000,
     createdAt: "2025-11-14T09:20:48",
@@ -79,7 +79,7 @@ const mockImports: IImport[] = [
       full_name: "Lisa Garcia",
       staff_code: "ADM-2025-0001",
     },
-    items_updated: 2,
+    products_updated: 2,
     items_imported: 80,
     total_amount: 12000000,
     createdAt: "2025-11-14T09:20:48",
@@ -93,7 +93,7 @@ const mockImports: IImport[] = [
       full_name: "James Taylor",
       staff_code: "ADM-2025-0001",
     },
-    items_updated: 3,
+    products_updated: 3,
     items_imported: 100,
     total_amount: 24000000,
     createdAt: "2025-11-14T09:15:20",
@@ -107,7 +107,7 @@ const mockImports: IImport[] = [
       full_name: "Maria Rodriguez",
       staff_code: "ADM-2025-0001",
     },
-    items_updated: 1,
+    products_updated: 1,
     items_imported: 40,
     total_amount: 4500000,
     createdAt: "2025-11-14T09:03:00",
@@ -193,7 +193,6 @@ export default function ImportsManagement() {
             <ImportsTable
               data={data?.importList || []}
               onView={(id) => { router.push(`import-history/${id}`) }}
-              onEdit={(id) => { router.push(`import-history/${id}/edit`) }}
             />
           </Suspense>
 

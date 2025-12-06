@@ -9,7 +9,7 @@ export interface IImport {
     staff_code: string;
     full_name: string;
   };
-  items_updated: number;
+  products_updated: number;
   items_imported: number;
   total_amount: number;
   createdAt: string;
@@ -25,7 +25,7 @@ export interface IImportDetail {
     full_name: string;
   };
   items: IImportItem[];
-  items_updated: number;
+  products_updated: number;
   items_imported: number;
   total_amount: number;
   note: string;
@@ -37,7 +37,7 @@ export interface IAddEditImport {
   _id?: string;
   import_code?: string;
   staff_id: string;
-  items_updated: number;
+  products_updated: number;
   items_imported: number;
   total_amount: number;
 }

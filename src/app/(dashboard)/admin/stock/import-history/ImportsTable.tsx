@@ -18,11 +18,9 @@ export function getStatusStyle(status: string) {
 export default function ImportsTable({
   data,
   onView,
-  onEdit,
 }: {
   data: IImport[];
   onView: (id: string) => void;
-  onEdit: (id: string) => void;
 }) {
 
   return (
@@ -32,7 +30,7 @@ export default function ImportsTable({
           <TableHead>Import Code</TableHead>
           <TableHead>Created By</TableHead>
           <TableHead>Date</TableHead>
-          <TableHead className="text-center">Items Updated</TableHead>
+          <TableHead className="text-center">Products Updated</TableHead>
           <TableHead className="text-center">Items Imported</TableHead>
           <TableHead className="text-right pr-4">Total Amount</TableHead>
           <TableHead className="text-center">Actions</TableHead>
@@ -58,7 +56,7 @@ export default function ImportsTable({
             </TableCell>
 
             <TableCell className="w-14/100 text-center text-muted-foreground">
-              {item.items_updated}
+              {item.products_updated}
             </TableCell>
 
             <TableCell className="w-14/100 text-center font-medium">
