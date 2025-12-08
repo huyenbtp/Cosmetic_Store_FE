@@ -70,7 +70,9 @@ export default function StockManagement() {
             <History className="w-4 h-4 mr-2" />
             View Import History
           </Button>
-          <Button>
+          <Button
+            onClick={() => router.push("stock/import-history/new")}
+          >
             <Upload className="w-4 h-4 mr-2" />
             Import Stock
           </Button>

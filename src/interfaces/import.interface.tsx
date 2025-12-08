@@ -1,4 +1,4 @@
-import { IImportItem } from "./importItem.interface";
+import { IImportItem, IAddEditImportItem } from "./importItem.interface";
 
 export interface IImport {
   _id: string;
@@ -37,7 +37,9 @@ export interface IAddEditImport {
   _id?: string;
   import_code?: string;
   staff_id: string;
+  items: IAddEditImportItem[];
   products_updated: number;
   items_imported: number;
   total_amount: number;
+  note: string;
 }
