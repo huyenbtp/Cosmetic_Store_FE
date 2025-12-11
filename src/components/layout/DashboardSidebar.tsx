@@ -68,7 +68,7 @@ const navigationItems = {
   ],
   cashier: [
     { href: "/cashier/dashboard", label: "Dashboard", icon: Home },
-    { href: "/cashier/checkout", label: "Checkout", icon: ShoppingCart },
+    { href: "/cashier/pos-checkout", label: "POS Checkout", icon: ShoppingBasket },
     { href: "/cashier/customers", label: "Customers", icon: Users },
     { href: "/cashier/daily-summary", label: "Daily summary", icon: Bell },
   ],

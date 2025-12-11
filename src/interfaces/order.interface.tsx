@@ -1,4 +1,4 @@
-import { IOrderItem } from "./orderItem.interface";
+import { IAddEditOrderItem, IOrderItem } from "./orderItem.interface";
 
 export interface IOrder {
   _id: string;
@@ -49,6 +49,8 @@ export interface IAddEditOrder {
   order_code?: string;
   cashier_id: string;
   customer_id: string | null;
+  discount_id: string | null;
+  items: IAddEditOrderItem[];
   total_items: number;
   subtotal: number;
   discount_amount: number;
@@ -56,4 +58,18 @@ export interface IAddEditOrder {
   total: number;
   payment_method: string;
   payment_status: string;
+}
+
+export interface IDiscountCode {
+  _id: string;
+  code: string;
+  description: string;
+  type: string;
+  value: number;
+  start_date: string;
+  end_date: string;
+  min_order_value: number;
+  max_uses: number;
+  used_count: number;
+  is_active: boolean;
 }

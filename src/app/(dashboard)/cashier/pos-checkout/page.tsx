@@ -1,0 +1,388 @@
+"use client"
+
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Phone, Star, UserPlus } from "lucide-react";
+import SearchBar from "@/components/layout/SearchBar";
+import ProductsGrid from "./ProductsGrid";
+import CartSection from "./CartSection";
+import AddEditCustomerDialog from "@/components/layout/form/AddEditCustomerDialog";
+import CheckoutPaymentSheet from "./CheckoutPaymentSheet";
+import { ICustomer } from "@/interfaces/customer.interface";
+import { IDiscountCode } from "@/interfaces/order.interface";
+import DiscountCodePickerDialog from "./DiscountCodePickerDialog";
+
+export interface IProduct {
+  _id: string;
+  name: string;
+  category: string;
+  price: number;
+  stock: number;
+  image: string;
+  brand: string;
+}
+
+export interface ICartItem extends IProduct {
+  quantity: number;
+}
+
+const cosmeticProducts: IProduct[] = [
+  {
+    _id: "COS-001",
+    name: "Hydrating Facial Serum maicbnh ựhdbkabcejcb",
+    category: "Skincare",
+    price: 450900,
+    stock: 25,
+    image: "https://picsum.photos/200/300?random=1",
+    brand: "GlowLab"
+  },
+  {
+    _id: "COS-002",
+    name: "Vitamin C Moisturizer",
+    category: "Skincare",
+    price: 385000,
+    stock: 30,
+    image: "https://picsum.photos/200/300?random=2",
+    brand: "PureGlow"
+  },
+  {
+    _id: "COS-003",
+    name: "Matte Liquid Lipstick",
+    category: "Makeup",
+    price: 249000,
+    stock: 42,
+    image: "https://picsum.photos/200/300?random=3",
+    brand: "ColorPop"
+  },
+  {
+    _id: "COS-004",
+    name: "Long-Wear Foundation",
+    category: "Makeup",
+    price: 520000,
+    stock: 18,
+    image: "https://picsum.photos/200/300?random=4",
+    brand: "Flawless"
+  },
+  {
+    _id: "COS-005",
+    name: "Rose Water Toner",
+    category: "Skincare",
+    price: 289000,
+    stock: 35,
+    image: "https://picsum.photos/200/300?random=5",
+    brand: "Nature's Best"
+  },
+  {
+    _id: "COS-006",
+    name: "Eyeshadow Palette",
+    category: "Makeup",
+    price: 499000,
+    stock: 22,
+    image: "https://picsum.photos/200/300?random=6",
+    brand: "Glam Studio"
+  },
+  {
+    _id: "COS-007",
+    name: "Anti-Aging Night Cream",
+    category: "Skincare",
+    price: 685000,
+    stock: 15,
+    image: "https://picsum.photos/200/300?random=7",
+    brand: "Youth Elixir"
+  },
+  {
+    _id: "COS-008",
+    name: "Waterproof Mascara",
+    category: "Makeup",
+    price: 229000,
+    stock: 50,
+    image: "https://picsum.photos/200/300?random=8",
+    brand: "LashPro"
+  },
+  {
+    _id: "COS-009",
+    name: "Gentle Cleansing Foam",
+    category: "Skincare",
+    price: 320000,
+    stock: 28,
+    image: "https://picsum.photos/200/300?random=9",
+    brand: "Pure Clean"
+  },
+  {
+    _id: "COS-010",
+    name: "Setting Spray",
+    category: "Makeup",
+    price: 265000,
+    stock: 38,
+    image: "https://picsum.photos/200/300?random=10",
+    brand: "FixIt"
+  },
+  {
+    _id: "COS-011",
+    name: "Floral Eau de Parfum",
+    category: "Fragrance",
+    price: 899000,
+    stock: 12,
+    image: "https://picsum.photos/200/300?random=11",
+    brand: "Essence"
+  },
+  {
+    _id: "COS-012",
+    name: "SPF 50 Sunscreen",
+    category: "Skincare",
+    price: 349000,
+    stock: 40,
+    image: "https://picsum.photos/200/300?random=12",
+    brand: "SunShield"
+  }
+];
+
+const mockCustomer: ICustomer = {
+  _id: "1",
+  name: "Sarah Johnson",
+  phone: "0912345678",
+  points: 10000,
+  join_date: "",
+};
+
+export default function POSCheckout() {
+  const [cartItems, setCartItems] = useState<ICartItem[]>([]);
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [customer, setCustomer] = useState<ICustomer | null>(null);
+  const [isAddEditCustomerDialogOpen, setIsAddEditCustomerDialogOpen] = useState(false);
+  const [usePoint, setUsePoint] = useState(false);
+  const [note, setNote] = useState("");
+  const [discountCode, setDiscountCode] = useState<IDiscountCode | null>(null);
+  const [isDiscountCodeDialogOpen, setIsDiscountCodeDialogOpen] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState("cash");
+
+  const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const discount_amount = !discountCode ? 0
+    : discountCode.type === "percent"
+      ? (subtotal * discountCode.value / 100)
+      : (subtotal - discountCode.value);
+
+  const handleAddToCart = (product: IProduct) => {
+    const existingItem = cartItems.find(item => item._id === product._id);
+
+    if (existingItem) {
+      if (existingItem.quantity >= product.stock) {
+
+        return;
+      }
+      setCartItems(cartItems.map(item =>
+        item._id === product._id
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
+      ));
+    } else {
+      setCartItems([...cartItems, { ...product, quantity: 1 }]);
+    }
+
+  };
+
+  const handleUpdateQuantity = (productId: string, change: number) => {
+    const newCartItems = cartItems.map(item => {
+      if (item._id === productId) {
+        const newQuantity = item.quantity + change;
+        if (newQuantity > item.stock) {
+          return item;
+        }
+        if (newQuantity <= 0) {
+          return item;
+        }
+        return { ...item, quantity: newQuantity };
+      }
+      return item;
+    })
+    const newSubtotal = newCartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    if (discountCode && newSubtotal < discountCode.min_order_value) {
+      setDiscountCode(null);
+    }
+    setCartItems(newCartItems);
+  };
+
+  const handleRemoveFromCart = (productId: string) => {
+    const newCartItems = cartItems.filter(item => item._id !== productId);
+    const newSubtotal = newCartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    if (discountCode && newSubtotal < discountCode.min_order_value) {
+      setDiscountCode(null);
+    }
+    setCartItems(newCartItems);
+  };
+
+  const handleSearchCustomer = (phoneNumber: string) => {
+    const phoneno = /^0\d{9}$/;
+    if (!phoneNumber.match(phoneno)) {
+      alert("Wrong phone number format");
+      return;
+    }
+
+    const res = mockCustomer;
+    if (res) setCustomer(res);
+    else setCustomer(null);
+  };
+
+  const handleCheckout = () => {
+    if (cartItems.length === 0) {
+      return;
+    }
+
+    // Reset form
+    setCartItems([]);
+    setCustomer(null);
+    setPaymentMethod("cash");
+  };
+
+  return (
+    <div className="px-8 pt-6 space-y-8 flex gap-6 h-full">
+      {/* Products Section */}
+      <div className="flex-2 flex flex-col gap-6 h-full">
+        <div className="flex flex-col sm:flex-row gap-4">
+          <SearchBar
+            searchItem="Search products by SKU"
+            willUpdateQuery
+          />
+          <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+            <SelectTrigger size="sm" className="w-full sm:w-48">
+              <SelectValue placeholder="All Categories" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Categories</SelectItem>
+              <SelectItem value="Skincare">Skincare</SelectItem>
+              <SelectItem value="Makeup">Makeup</SelectItem>
+              <SelectItem value="Fragrance">Fragrance</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="flex-1 overflow-auto pb-4">
+          <ProductsGrid
+            data={cosmeticProducts}
+            handleAddToCart={handleAddToCart}
+          />
+        </div>
+      </div>
+
+      {/* Cart Section */}
+      <div className="flex-1 pb-6">
+        <Card className="h-full">
+          <CardContent className="flex flex-col flex-1 overflow-hidden">
+            {/* Customer Info */}
+            <div className="mb-4 space-y-2 border-b" >
+              <Label className="text-md">Customer Information</Label>
+              <div className="flex items-center gap-2">
+                <div className="flex-1">
+                  <SearchBar
+                    searchItem="Search by phone number"
+                    onSearch={handleSearchCustomer}
+                    className="w-full"
+                  />
+                </div>
+                <Button
+                  onClick={() => {
+                    setCustomer(null);
+                    setIsAddEditCustomerDialogOpen(true)
+                  }}
+                >
+                  <UserPlus className="mr-1" />
+                  New
+                </Button>
+              </div>
+
+              <div className="mb-4">
+                {customer && (
+                  <div className="flex text-sm bg-accent/50 py-2.5 px-4 rounded-lg">
+                    <div className="flex-1">
+                      <div className="font-medium text-primary">{customer.name}</div>
+                      <div className="text-muted-foreground flex items-center gap-3">
+                        <Phone className="w-3 h-3" />
+                        {customer.phone}
+                      </div>
+                      <div className="text-muted-foreground flex items-center">
+                        <Star className="w-3 h-3 mr-3" />
+                        <span className="font-medium mr-1">{customer.points}</span>
+                        points
+                      </div>
+                    </div>
+                    <div className="self-end">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => {
+                          setIsAddEditCustomerDialogOpen(true)
+                        }}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => { setCustomer(null) }}
+                      >
+                        Clear
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <CartSection
+              cartItems={cartItems}
+              handleUpdateQuantity={handleUpdateQuantity}
+              handleRemoveFromCart={handleRemoveFromCart}
+            />
+
+            {/* Total Summary */}
+            {customer && customer.points > 0 &&
+              <div className="flex justify-between text-sm mt-1 text-green-600 dark:text-success1-foreground">
+                <span>Use {customer?.points.toLocaleString()} points</span>
+                <Switch
+                  checked={usePoint}
+                  onCheckedChange={(checked) => setUsePoint(checked)}
+                  className="data-[state=checked]:bg-green-600 dark:data-[state=checked]:bg-success1-foreground/80"
+                />
+              </div>
+            }
+            <div className="flex justify-between font-semibold border-t pt-4 mt-2 mb-8">
+              <span>Subtotal:</span>
+              <span className="text-green-600 dark:text-success1-foreground">{subtotal.toLocaleString()} ₫</span>
+            </div>
+
+            {/* Checkout Button */}
+            <CheckoutPaymentSheet
+              subtotal={subtotal}
+              discount_amount={discount_amount}
+              note={note}
+              onChangeNote={setNote}
+              discountCode={discountCode}
+              onOpenDiscountCodePicker={() => setIsDiscountCodeDialogOpen(true)}
+              pointsUsed={customer && usePoint ? customer.points : 0}
+              paymentMethod={paymentMethod}
+              onChangePaymentMethod={setPaymentMethod}
+              onSubmit={handleCheckout}
+            />
+          </CardContent>
+        </Card>
+      </div>
+
+      <AddEditCustomerDialog
+        initialData={customer}
+        open={isAddEditCustomerDialogOpen}
+        setOpen={setIsAddEditCustomerDialogOpen}
+      />
+
+      <DiscountCodePickerDialog
+        open={isDiscountCodeDialogOpen}
+        onOpenChange={setIsDiscountCodeDialogOpen}
+        subtotal={subtotal}
+        selectedCodeId={discountCode?._id || null}
+        onSelect={setDiscountCode}
+      />
+    </div>
+  );
+}

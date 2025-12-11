@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import CustomersTable from "./CustomersTable";
-import AddEditCustomerDialog from "./AddEditCustomerDialog";
+import AddEditCustomerDialog from "../../../../components/layout/form/AddEditCustomerDialog";
 import { IAddEditCustomer } from "@/interfaces/customer.interface";
 
 export default function CustomersManagement() {

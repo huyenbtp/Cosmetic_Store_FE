@@ -8,23 +8,29 @@ import { Input } from "../ui/input";
 
 interface SearchBarProps {
   searchItem: string;
+  willUpdateQuery?: boolean;
+  onSearch?: (query: string) => void;
   className?: string;
 }
 
-export default function SearchBar({ searchItem, className }: SearchBarProps) {
+export default function SearchBar({ searchItem: placeholder, willUpdateQuery, onSearch, className }: SearchBarProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [value, setValue] = useState(searchParams.get("q") ?? "");
+  const [value, setValue] = useState(willUpdateQuery ? (searchParams.get("q") ?? "") : "");
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      const newQuery = updateQueryParams(searchParams, {
-        q: value,
-        page: 1, // reset page khi search
-      });
+      if (willUpdateQuery) {
+        const newQuery = updateQueryParams(searchParams, {
+          q: value,
+          page: 1, // reset page khi search
+        });
 
-      router.push(`?${newQuery}`);
+        router.push(`?${newQuery}`);
+      } else if (onSearch) {
+        onSearch(value);
+      }
     }
   };
 
@@ -32,7 +38,7 @@ export default function SearchBar({ searchItem, className }: SearchBarProps) {
     <div className="relative">
       <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
       <Input
-        placeholder={`Search ${searchItem}s...`}
+        placeholder={placeholder}
         value={value}
         onChange={(e) => setValue(e.target.value)}
         onKeyDown={handleKeyDown}
