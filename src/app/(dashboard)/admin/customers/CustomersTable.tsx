@@ -109,7 +109,7 @@ export default function CustomersTable({
     <Card>
       <CardHeader>
         <div className="flex flex-col sm:flex-row gap-4">
-          <SearchBar searchItem="customer" />
+          <SearchBar placeholder="Search customers..." willUpdateQuery />
 
           <Select value={searchBy} onValueChange={(value: CustomerKey) => setSearchBy(value)}>
             <SelectTrigger size="sm" className="w-full sm:w-48">

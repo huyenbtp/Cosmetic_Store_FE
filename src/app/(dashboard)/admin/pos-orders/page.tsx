@@ -166,7 +166,7 @@ export default function OrdersManagement() {
       <Card>
         <CardHeader>
           <div className="flex flex-col sm:flex-row gap-4">
-            <SearchBar searchItem="order" className="w-84" />
+            <SearchBar placeholder="Search orders..." willUpdateQuery className="w-84" />
 
             <Select value={searchBy} onValueChange={(value: OrderKey) => setSearchBy(value)}>
               <SelectTrigger size="sm" className="w-full sm:w-42">

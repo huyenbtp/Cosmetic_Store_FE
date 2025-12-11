@@ -164,7 +164,7 @@ export default function ProductsTable({
     <Card>
       <CardHeader>
         <div className="flex flex-col sm:flex-row gap-4">
-          <SearchBar searchItem="product" />
+          <SearchBar placeholder="Search products..." willUpdateQuery />
 
           <Select value={searchBy} onValueChange={(value: ProductKey) => setSearchBy(value)}>
             <SelectTrigger size="sm" className="w-full sm:w-48">

@@ -171,7 +171,7 @@ export default function ImportsManagement() {
       <Card>
         <CardHeader>
           <div className="flex flex-col sm:flex-row gap-4">
-            <SearchBar searchItem="import" className="w-84" />
+            <SearchBar placeholder="Search import orders..." willUpdateQuery className="w-84" />
 
             <Select value={searchBy} onValueChange={(value: ImportKey) => setSearchBy(value)}>
               <SelectTrigger size="sm" className="w-full sm:w-42">

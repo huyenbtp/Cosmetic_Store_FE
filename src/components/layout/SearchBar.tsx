@@ -7,13 +7,13 @@ import { Search } from "lucide-react";
 import { Input } from "../ui/input";
 
 interface SearchBarProps {
-  searchItem: string;
+  placeholder: string;
   willUpdateQuery?: boolean;
   onSearch?: (query: string) => void;
   className?: string;
 }
 
-export default function SearchBar({ searchItem: placeholder, willUpdateQuery, onSearch, className }: SearchBarProps) {
+export default function SearchBar({ placeholder, willUpdateQuery, onSearch, className }: SearchBarProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 

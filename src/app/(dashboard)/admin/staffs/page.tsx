@@ -165,7 +165,7 @@ export default function StaffsManagement() {
       <Card>
         <CardHeader>
           <div className="flex flex-col sm:flex-row gap-4">
-            <SearchBar searchItem="staff" />
+            <SearchBar placeholder="Search staffs..." willUpdateQuery />
 
             <Select value={searchBy} onValueChange={(value: StaffKey) => setSearchBy(value)}>
               <SelectTrigger size="sm" className="w-full sm:w-48">

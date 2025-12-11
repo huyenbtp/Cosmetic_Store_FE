@@ -244,7 +244,7 @@ export default function POSCheckout() {
       <div className="flex-2 flex flex-col gap-6 h-full">
         <div className="flex flex-col sm:flex-row gap-4">
           <SearchBar
-            searchItem="Search products by SKU"
+            placeholder="Search products by SKU"
             willUpdateQuery
           />
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
@@ -277,7 +277,7 @@ export default function POSCheckout() {
               <div className="flex items-center gap-2">
                 <div className="flex-1">
                   <SearchBar
-                    searchItem="Search by phone number"
+                    placeholder="Search by phone number"
                     onSearch={handleSearchCustomer}
                     className="w-full"
                   />
