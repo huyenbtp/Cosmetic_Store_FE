@@ -56,7 +56,7 @@ const navigationItems = {
         { href: "/admin/customers", label: "Customers", icon: UserStar },
       ],
     },
-    { href: "/admin/promotions", label: "Promotions", icon: Percent },
+    { href: "/admin/discount-codes", label: "Discounts", icon: Percent },
     { href: "/admin/staffs", label: "Staffs", icon: Users },
     {
       label: "Administration",
