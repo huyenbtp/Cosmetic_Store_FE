@@ -36,6 +36,7 @@ export default function BrandsFilter({ maxTotal }: { maxTotal: number }) {
     const newQuery = updateQueryParams(searchParams, {
       minTotal: min,
       maxTotal: max,
+      page: 1,
     });
 
     router.push(`?${newQuery}`);

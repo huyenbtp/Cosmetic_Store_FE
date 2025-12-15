@@ -10,38 +10,28 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ImageWithFallback } from "@/components/layout/ImageWithFallback";
 import { Image, UploadCloud } from "lucide-react";
-import { IProductDetail } from "@/interfaces/product.interface";
-import { ICategory } from "@/interfaces/category.interface";
-import { IBrand } from "@/interfaces/brand.interface";
+import { IAddEditProduct, IFetchedBrand, IFetchedCategory, } from "@/interfaces/product.interface";
 
-
-const NullProduct: IProductDetail = {
+const NullProduct: IAddEditProduct = {
   _id: '',
   sku: '',
   name: "",
-  category: "",
-  brand: "",
+  category: { _id: "", name: "" },
+  brand: { _id: "", name: "" },
   selling_price: 0,
-  import_price: 0,
   description: "",
   image: '',
-  stock_quantity: 0,
-  totalSold: 0,
-  totalRevenue: 0,
   status: "",
-  createdDate: "",
-  lastUpdated: "",
-  lastImportDate: "",
 };
 
-const mockCategoryList: ICategory[] = [
+const mockCategoryList: IFetchedCategory[] = [
   { _id: '1', name: 'Cleanser', },
   { _id: '2', name: 'Moisturizer', },
   { _id: '3', name: 'Sunscreen', },
   { _id: '4', name: 'Mask', },
 ];
 
-const mockBrandList: IBrand[] = [
+const mockBrandList: IFetchedBrand[] = [
   { _id: '1', name: 'Innisfree', },
   { _id: '2', name: 'Rohto', },
   { _id: '3', name: 'Shiseido', },
@@ -78,13 +68,13 @@ export function generateSKU(category: string, brand: string) {
 export default function NewProduct() {
   const router = useRouter();
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
-  const [data, setData] = useState<IProductDetail>(NullProduct);
-  const [categoryList, setCategoryList] = useState<ICategory[]>(mockCategoryList);
-  const [brandList, setBrandList] = useState<IBrand[]>(mockBrandList);
+  const [data, setData] = useState<IAddEditProduct>(NullProduct);
+  const [categoryList, setCategoryList] = useState<IFetchedCategory[]>(mockCategoryList);
+  const [brandList, setBrandList] = useState<IFetchedBrand[]>(mockBrandList);
 
   const handleGenerate = () => {
-    if (data.category === "" || data.brand === "") return;
-    setData((prev) => ({ ...prev, sku: generateSKU(data.category, data.brand) }));
+    if (data.category._id === "" || data.brand._id === "") return;
+    setData((prev) => ({ ...prev, sku: generateSKU(data.category.name, data.brand.name) }));
   }
 
   const handleSaveAndPublish = () => {
@@ -136,21 +126,24 @@ export default function NewProduct() {
                 <Label
                   htmlFor="product-category"
                   className={`transition-all text-muted-foreground
-                    ${data.category.trim() === "" ? "opacity-0 h-0 -translate-y-2" : "opacity-100 mb-2"}
+                    ${data.category._id.trim() === "" ? "opacity-0 h-0 -translate-y-2" : "opacity-100 mb-2"}
                   `}
                 >
                   Category
                 </Label>
                 <Select
-                  value={data.category}
-                  onValueChange={(value) => setData({ ...data, category: value })}
+                  value={data.category._id}
+                  onValueChange={(value) => {
+                    const newCategory = categoryList.find(item => item._id === value);
+                    if (newCategory) setData({ ...data, category: newCategory });
+                  }}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select Product Category" />
                   </SelectTrigger>
                   <SelectContent>
                     {categoryList.map((item) => (
-                      <SelectItem key={item._id} value={item.name}>
+                      <SelectItem key={item._id} value={item._id}>
                         {item.name}
                       </SelectItem>
                     ))}
@@ -162,21 +155,24 @@ export default function NewProduct() {
                 <Label
                   htmlFor="product-brand"
                   className={`transition-all text-muted-foreground
-                    ${data.brand.trim() === "" ? "opacity-0 h-0 -translate-y-2" : "opacity-100 mb-2"}
+                    ${data.brand._id.trim() === "" ? "opacity-0 h-0 -translate-y-2" : "opacity-100 mb-2"}
                   `}
                 >
                   Brand
                 </Label>
                 <Select
-                  value={data.brand}
-                  onValueChange={(value) => setData({ ...data, brand: value })}
+                  value={data.brand._id}
+                  onValueChange={(value) => {
+                    const newBrand = brandList.find(item => item._id === value);
+                    if (newBrand) setData({ ...data, brand: newBrand });
+                  }}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select Brand" />
                   </SelectTrigger>
                   <SelectContent>
                     {brandList.map((item) => (
-                      <SelectItem key={item._id} value={item.name}>
+                      <SelectItem key={item._id} value={item._id}>
                         {item.name}
                       </SelectItem>
                     ))}
@@ -188,7 +184,7 @@ export default function NewProduct() {
                 <Label
                   htmlFor="product-sku"
                   className={`transition-all text-muted-foreground
-                    ${data.sku.trim() === "" ? "opacity-0 h-0 -translate-y-2" : "opacity-100 mb-2"}
+                    ${!data.sku ? "opacity-0 h-0 -translate-y-2" : "opacity-100 mb-2"}
                   `}
                 >
                   Product SKU

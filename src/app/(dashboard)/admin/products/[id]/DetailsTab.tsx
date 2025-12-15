@@ -2,7 +2,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { ImageWithFallback } from "@/components/layout/ImageWithFallback";
 import { IProductDetail } from "@/interfaces/product.interface";
-import { getStatusBadge } from "../ProductsTable";
+import { getProductStatusBadge } from "../ProductsFilter";
+import dayjs from "dayjs";
 
 export default function DetailsTab({
   product,
@@ -37,14 +38,14 @@ export default function DetailsTab({
             <div>
               <Label>Category</Label>
               <p className="text-sm text-muted-foreground mt-2">
-                {product.category}
+                {product.category.name}
               </p>
             </div>
 
             <div>
               <Label>Brand</Label>
               <p className="text-sm text-muted-foreground mt-2">
-                {product.brand}
+                {product.brand.name}
               </p>
             </div>
           </div>
@@ -66,29 +67,21 @@ export default function DetailsTab({
           <div>
             <Label>Status</Label>
             <div className="mt-2">
-              {getStatusBadge(product.status)}
+              {getProductStatusBadge(product.status)}
             </div>
           </div>
 
           <div>
             <Label>Created Date</Label>
             <p className="text-sm text-muted-foreground mt-2">
-              {new Date(product.createdDate).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-              })}
+              {dayjs(product.createdAt).format("MMMM D, YYYY")}
             </p>
           </div>
 
           <div>
             <Label>Last Updated</Label>
             <p className="text-sm text-muted-foreground mt-2">
-              {new Date(product.lastUpdated).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-              })}
+              {dayjs(product.updatedAt).format("MMMM D, YYYY")}
             </p>
           </div>
         </CardContent>

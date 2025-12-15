@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { IProductDetail } from "@/interfaces/product.interface";
+import dayjs from "dayjs";
 
 export default function AnalyticsTab({
   product,
@@ -44,11 +45,11 @@ export default function AnalyticsTab({
           <div className="flex justify-between items-center">
             <span className="text-muted-foreground">Last Import On</span>
             <span className=" ">
-              {new Date(product.lastImportDate).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-              })}
+
+              {product.lastImportDate
+                ? dayjs(product.lastImportDate).format("MMMM D, YYYY")
+                : "No information available."
+              }
             </span>
           </div>
         </CardContent>

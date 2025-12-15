@@ -14,8 +14,14 @@ const mockProduct: IProductDetail = {
   _id: '1',
   sku: 'CLS-001',
   name: "Sữa rửa mặt dưỡng ẩm tối ưu Hada Labo Advanced Nourish Cleanser 80g",
-  category: "Cleanser",
-  brand: "Hada Labo",
+  category: {
+    _id: "1",
+    name: "Cleanser",
+  },
+  brand: {
+    _id: "1",
+    name: "Hada Labo",
+  },
   selling_price: 100000,
   import_price: 50000,
   description: "Kem rửa mặt Hada Labo dưỡng ẩm với công dụng làm sạch sâu cùng hệ dưỡng ẩm sâu giúp dưỡng da ẩm mượt, sáng mịn, tươi trẻ mỗi ngày",
@@ -23,10 +29,10 @@ const mockProduct: IProductDetail = {
   stock_quantity: 45,
   totalSold: 234,
   totalRevenue: 23400000,
-  status: "Published",
-  createdDate: "2024-08-15",
-  lastUpdated: "2024-09-20",
-  lastImportDate: "2025-01-05",
+  status: "published",
+  createdAt: "2025-11-03T09:30:00",
+  updatedAt: "2025-12-15T09:30:00",
+  lastImportDate: "2025-12-03T09:30:00",
 };
 
 export default function ProductDetail() {
@@ -38,7 +44,7 @@ export default function ProductDetail() {
       <div className="flex items-center gap-4">
         <div className="flex-1 mr-10">
           <h1 className="text-2xl font-semibold">{product.name}</h1>
-          <p className="text-muted-foreground">{product.category} • SKU: {product.sku}</p>
+          <p className="text-muted-foreground">{product.category.name} • SKU: {product.sku}</p>
         </div>
 
         <Button
@@ -49,7 +55,7 @@ export default function ProductDetail() {
         </Button>
 
         <Button
-          onClick={() => { router.push(`new-product`); }}
+          onClick={() => { router.push(`edit`); }}
         >
           <Edit className="w-4 h-4 mr-2" />
           Edit Product

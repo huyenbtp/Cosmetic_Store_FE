@@ -46,6 +46,7 @@ export default function ImportsFilter({ maxAmount }: { maxAmount: number }) {
     const newQuery = updateQueryParams(searchParams, {
       minAmount: min,
       maxAmount: max,
+      page: 1,
     });
 
     router.push(`?${newQuery}`);
