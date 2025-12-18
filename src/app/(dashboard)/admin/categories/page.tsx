@@ -187,7 +187,7 @@ export default function CategoriesPage() {
                   setSelectedParentId(selected._id);
                   setIsAddEditDialogOpen(true);
                 }}
-                onViewProducts={() => { router.push(`products?category=${selected.slug}&page=1`) }}
+                onViewProducts={() => { router.push(`products?page=1&q=${selected.name}&by=category`) }}
               />
             )}
           </div>

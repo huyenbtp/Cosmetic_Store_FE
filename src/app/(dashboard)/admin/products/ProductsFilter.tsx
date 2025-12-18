@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import ValueRangePicker from "@/components/layout/ValueRangePicker";
 import { useRouter, useSearchParams } from "next/navigation";
 import { updateQueryParams } from "@/lib/utils";
 import { IMinMaxFilterData } from "@/interfaces/product.interface";
+import { ProductKey, ProductStatus } from "@/lib/api/product.api";
 
 export function getProductStatusBadge(status: string) {
   if (status === "published") {
@@ -16,56 +17,34 @@ export function getProductStatusBadge(status: string) {
   }
 };
 
-export default function ProductsFilter({ data }: { data: IMinMaxFilterData }) {
+export default function ProductsFilter({
+  data,
+  priceRange,
+  stockRange,
+  handleApplyPrice,
+  handleApplyStock,
+}: {
+  data: IMinMaxFilterData;
+  priceRange: number[];
+  stockRange: number[];
+  handleApplyPrice: (range: number[]) => void;
+  handleApplyStock: (range: number[]) => void;
+}) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [stockQuantityRange, setStockQuantityRange] = useState<number[]>([0, 0]);
-  const [sellingPriceRange, setSellingPriceRange] = useState<number[]>([0, 0]);
+  const searchBy = searchParams.get("by") || "name";
   const status = searchParams.get("status") || "";
 
-  useEffect(() => {
-    setStockQuantityRange([
-      searchParams.get("minStock") ? Number(searchParams.get("minStock")) : data.stock.min,
-      searchParams.get("maxStock") ? Number(searchParams.get("maxStock")) : data.stock.max
-    ])
-    setSellingPriceRange([
-      searchParams.get("minPrice") ? Number(searchParams.get("minPrice")) : data.price.min,
-      searchParams.get("maxPrice") ? Number(searchParams.get("maxPrice")) : data.price.max
-    ])
-  }, [data]);
-
-  const handleStockQuantityChange = (range: number[]) => {
-    setStockQuantityRange(range);
-
-    const min = range[0];
-    const max = range[1];
-
+  const handleSearchByChange = (value: ProductKey) => {
     const newQuery = updateQueryParams(searchParams, {
-      minStock: min,
-      maxStock: max,
+      by: value,
       page: 1,
     });
-
     router.push(`?${newQuery}`);
   }
 
-  const handleSellingPriceChange = (range: number[]) => {
-    setSellingPriceRange(range);
-
-    const min = range[0];
-    const max = range[1];
-
-    const newQuery = updateQueryParams(searchParams, {
-      minPrice: min,
-      maxPrice: max,
-      page: 1,
-    });
-
-    router.push(`?${newQuery}`);
-  }
-
-  const handleStatusChange = (value: string) => {
+  const handleStatusChange = (value: ProductStatus | "all") => {
     const newQuery = updateQueryParams(searchParams, {
       status: value !== "all" ? value : "",
       page: 1,
@@ -75,6 +54,18 @@ export default function ProductsFilter({ data }: { data: IMinMaxFilterData }) {
 
   return (
     <>
+      <Select value={searchBy} onValueChange={(value: ProductKey) => handleSearchByChange(value)}>
+        <SelectTrigger size="sm" className="w-full sm:w-42">
+          <SelectValue placeholder="Search by ..." />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="name">Product name</SelectItem>
+          <SelectItem value="sku">SKU</SelectItem>
+          <SelectItem value="category">Category</SelectItem>
+          <SelectItem value="brand">Brand</SelectItem>
+        </SelectContent>
+      </Select>
+
       <ValueRangePicker
         placeholder="Stock Quantity"
         label="Stock Quantity Range"
@@ -82,8 +73,8 @@ export default function ProductsFilter({ data }: { data: IMinMaxFilterData }) {
         min={data.stock.min}
         max={data.stock.max}
         step={1}
-        value={stockQuantityRange}
-        handleApply={handleStockQuantityChange}
+        value={stockRange}
+        handleApply={handleApplyStock}
       />
 
       <ValueRangePicker
@@ -93,11 +84,11 @@ export default function ProductsFilter({ data }: { data: IMinMaxFilterData }) {
         min={data.price.min}
         max={data.price.max}
         step={1_000}
-        value={sellingPriceRange}
-        handleApply={handleSellingPriceChange}
+        value={priceRange}
+        handleApply={handleApplyPrice}
       />
 
-      <Select value={status} onValueChange={(value) => handleStatusChange(value)}>
+      <Select value={status} onValueChange={(value: ProductStatus | "all") => handleStatusChange(value)}>
         <SelectTrigger size="sm" className="w-full sm:w-30">
           <SelectValue placeholder="Status" />
         </SelectTrigger>

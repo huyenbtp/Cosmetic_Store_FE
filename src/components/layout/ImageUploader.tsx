@@ -4,6 +4,8 @@ import { useRef, useState } from "react";
 import { Label } from "../ui/label";
 import { Button } from "../ui/button";
 
+export type ImageState = "keep" | "remove" | "new";
+
 export default function ImageUploader({
   value,
   onChange,
@@ -11,14 +13,14 @@ export default function ImageUploader({
   label = "Upload Image",
   description = "Upload a cover image for this item.",
 }: {
-  value: string;
-  onChange: (url: string) => void;
+  value?: string;
+  onChange: (file: File | null, imageState: ImageState) => void;
   className?: string;
   label?: string;
   description?: string;
 }) {
-  const [preview, setPreview] = useState<string>(value);
-  const fileRef = useRef<HTMLInputElement | null>(null);
+  const [preview, setPreview] = useState<string | null>(value || null);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   const handleSelect = () => {
     fileRef.current?.click();
@@ -30,17 +32,17 @@ export default function ImageUploader({
 
     const url = URL.createObjectURL(file);
     setPreview(url);
-    onChange?.(url);
+    onChange?.(file, "new");
   };
 
   const handleRemoveImage = () => {
     setPreview("");
-    onChange?.("");
+    onChange?.(null, "remove");
   };
 
   return (
     <>
-      {preview === "" ? (
+      {!preview ? (
         <div onClick={handleSelect} className="flex flex-col justify-center items-center w-full h-80 bg-input rounded-lg border text-muted-foreground/70 cursor-pointer">
           <Image className="w-14 h-14 mb-6 text-primary" />
           <div className="flex gap-3 mb-3 font-medium text-primary/80">

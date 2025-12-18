@@ -50,12 +50,14 @@ export default function DetailsTab({
             </div>
           </div>
 
-          <div>
-            <Label>Description</Label>
-            <p className="text-sm text-muted-foreground mt-2">
-              {product.description}
-            </p>
-          </div>
+          {product.description &&
+            <div>
+              <Label>Description</Label>
+              <p className="text-sm text-muted-foreground mt-2">
+                {product.description}
+              </p>
+            </div>
+          }
         </CardContent>
       </Card>
 

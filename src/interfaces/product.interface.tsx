@@ -40,7 +40,6 @@ export interface IProductDetail {
 }
 
 export interface IAddEditProduct {
-  _id?: string;
   sku?: string;
   name: string;
   category: { _id: string; name: string }

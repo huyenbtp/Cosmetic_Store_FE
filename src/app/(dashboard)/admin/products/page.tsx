@@ -4,7 +4,6 @@ import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
 import { Plus } from "lucide-react";
 import SearchBar from "@/components/layout/SearchBar";
@@ -12,6 +11,8 @@ import ProductsFilter from "./ProductsFilter";
 import ProductsTable from "./ProductsTable";
 import { Pagination } from "@/components/layout/Pagination";
 import { IMinMaxFilterData, IProduct } from "@/interfaces/product.interface";
+import productApi, { ProductKey, ProductStatus } from "@/lib/api/product.api";
+import { updateQueryParams } from "@/lib/utils";
 
 const mockProducts: IProduct[] = [
   {
@@ -181,43 +182,75 @@ const NullMinMaxFilterData: IMinMaxFilterData = {
   stock: { min: 0, max: 0 },
 }
 
-type ProductKey = "name" | "sku" | "category" | "brand";
-
 export default function ProductsManagement() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [loading, setLoading] = useState(false);
 
   const [data, setData] = useState<IProduct[]>([]);
   const [minMaxFilterData, setMinMaxFilterData] = useState<IMinMaxFilterData>(NullMinMaxFilterData);
+  const isMinMaxFilterLoad = minMaxFilterData !== NullMinMaxFilterData;
   const [total, setTotal] = useState(0);
 
-  const [searchBy, setSearchBy] = useState<ProductKey>("name");
   const [limit, setLimit] = useState(7);
-  const page = Number(searchParams.get("page") || 1) || 1;
+  const rawPage = Number(searchParams.get("page"));
+  const page = Number.isInteger(rawPage) && rawPage > 0 ? rawPage : 1;
   const searchQuery = searchParams.get("q") || "";
-  const minPrice = Number(searchParams.get("minPrice") || 0) || 0;
-  const maxPrice = Number(searchParams.get("maxPrice") || 0) || 0;
-  const minStock = Number(searchParams.get("minStock") || 0) || 0;
-  const maxStock = Number(searchParams.get("maxStock") || 0) || 0;
+  const searchBy = searchParams.get("by") || "name";
   const status = searchParams.get("status") || "";
+  const [priceRange, setPriceRange] = useState<number[]>([0, 0]);
+  const [stockRange, setStockRange] = useState<number[]>([0, 0]);
 
   const fetchMinMaxFilter = async () => {
-    setMinMaxFilterData({
-      price: { min: 10000, max: 2000000 },
-      stock: { min: 0, max: 100 },
-    })      //fake
+    try {
+      const res = await productApi.fetchProductStats();
+
+      setMinMaxFilterData(res)
+      setPriceRange([res.price.min, res.price.max]);
+      setStockRange([res.stock.min, res.stock.max]);
+    } catch (error) {
+      console.error("Fetch products min/max filter value failed:", error);
+    } finally {
+
+    }
   };
   useEffect(() => {
     fetchMinMaxFilter();
   }, []);
 
   const fetchProducts = async () => {
-    setData(mockProducts.slice(0, limit))     //fake
-    setTotal(mockProducts.length)
+    setLoading(true);
+    if (!isMinMaxFilterLoad) return;
+
+    try {
+      const res = await productApi.fetchProducts({
+        page,
+        limit,
+        q: searchQuery || undefined,
+        by: searchBy as ProductKey || "name",
+        minPrice: priceRange[0] || undefined,
+        maxPrice: priceRange[1],
+        minStock: stockRange[0] || undefined,
+        maxStock: stockRange[1],
+        status: status as ProductStatus || undefined,
+      });
+      setData(res.data);
+      setTotal(res.pagination?.total ?? 0);
+    } catch (error) {
+      console.error("Fetch products failed:", error);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  useEffect(() => {
+    const newQuery = updateQueryParams(searchParams, { page: 1 });
+    router.push(`?${newQuery}`);
+  }, [isMinMaxFilterLoad, limit, searchQuery, searchBy, priceRange, stockRange]);
+
   useEffect(() => {
     fetchProducts();
-  }, [page, limit, searchQuery, searchBy, minPrice, maxPrice, minStock, maxStock, status]);
+  }, [isMinMaxFilterLoad, page, isMinMaxFilterLoad, limit, searchQuery, searchBy, priceRange, stockRange, status]);
 
   return (
     <div className="px-8 py-6 space-y-8">
@@ -236,26 +269,21 @@ export default function ProductsManagement() {
           <div className="flex flex-col sm:flex-row gap-4">
             <SearchBar placeholder="Search products..." willUpdateQuery className="w-84" />
 
-            <Select value={searchBy} onValueChange={(value: ProductKey) => setSearchBy(value)}>
-              <SelectTrigger size="sm" className="w-full sm:w-42">
-                <SelectValue placeholder="Search by ..." />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="name">Product name</SelectItem>
-                <SelectItem value="sku">SKU</SelectItem>
-                <SelectItem value="category">Category</SelectItem>
-                <SelectItem value="brand">Brand</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <ProductsFilter data={minMaxFilterData} />
+            <ProductsFilter
+              data={minMaxFilterData}
+              priceRange={priceRange}
+              stockRange={stockRange}
+              handleApplyPrice={(range) => setPriceRange(range)}
+              handleApplyStock={(range) => setStockRange(range)}
+            />
           </div>
         </CardHeader>
 
         <CardContent>
           <Suspense fallback={<Spinner />}>
             <ProductsTable
-              data={data || []}
+              loading={loading}
+              data={data}
               onView={(id) => { router.push(`products/${id}`) }}
               onEdit={(id) => router.push(`products/${id}/edit`)}
             />

@@ -1,6 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ImageWithFallback } from "@/components/layout/ImageWithFallback";
 import { Edit, Eye } from "lucide-react";
@@ -8,10 +9,12 @@ import { getProductStatusBadge } from "./ProductsFilter";
 import { IProduct } from "@/interfaces/product.interface";
 
 export default function ProductsTable({
+  loading,
   data,
   onView,
   onEdit,
 }: {
+  loading: boolean;
   data: IProduct[],
   onView: (id: string) => void;
   onEdit: (id: string) => void;
@@ -31,7 +34,13 @@ export default function ProductsTable({
       </TableHeader>
 
       <TableBody>
-        {data.length > 0 ? (data.map((item) => (
+        {loading ? (
+          <TableRow>
+            <TableCell colSpan={7} align="center">
+              <Spinner className="size-10" />
+            </TableCell>
+          </TableRow>
+        ) : data.length > 0 ? (data.map((item) => (
           <TableRow key={item._id}>
             <TableCell className="w-3/14 max-w-80 pr-8" title={item.name}>
               <div className="flex items-center gap-3">
@@ -88,7 +97,7 @@ export default function ProductsTable({
         ))) : (
           <TableRow>
             <TableCell colSpan={7} align="center">
-              Không có dữ liệu
+              No data available
             </TableCell>
           </TableRow>
         )}

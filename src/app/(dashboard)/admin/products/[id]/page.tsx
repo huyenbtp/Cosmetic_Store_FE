@@ -1,14 +1,16 @@
 "use client"
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Edit, } from "lucide-react";
 import { IProductDetail } from "@/interfaces/product.interface";
 import StatsCard from "./StatsCard";
 import AnalyticsTab from "./AnalyticsTab";
 import DetailsTab from "./DetailsTab";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import productApi from "@/lib/api/product.api";
 
 const mockProduct: IProductDetail = {
   _id: '1',
@@ -37,9 +39,42 @@ const mockProduct: IProductDetail = {
 
 export default function ProductDetail() {
   const router = useRouter();
-  const [product, setProduct] = useState<IProductDetail>(mockProduct);
+  const { id } = useParams<{ id: string }>();
+  const [product, setProduct] = useState<IProductDetail>();
+  const [loading, setLoading] = useState(false);
 
-  return (
+  const fetchProduct = async () => {
+    setLoading(true)
+    try {
+      const res = await productApi.fetchProductById(id);
+      setProduct(res);
+    } catch (error) {
+      console.error("Fetch product failed:", error);
+    } finally {
+      setLoading(false)
+    }
+  };
+
+  useEffect(() => {
+    fetchProduct();
+  }, []);
+
+  const handleStatusChange = async (status: "published" | "unpublished") => {
+    try {
+      await productApi.updateStatus(id, status);
+    } catch (error) {
+      console.error("Publish product failed:", error);
+    } finally {
+      fetchProduct()
+    }
+  }
+
+  if (loading) return (
+    <div className="h-full flex justify-center items-center">
+      <Spinner className="size-12" />
+    </div>
+  )
+  if (product) return (
     <div className="px-8 py-6 space-y-6">
       <div className="flex items-center gap-4">
         <div className="flex-1 mr-10">
@@ -48,14 +83,18 @@ export default function ProductDetail() {
         </div>
 
         <Button
-          variant={product.status === "Published" ? "destructive" : "outline"}
-          onClick={() => { }}
+          variant={product.status === "published" ? "destructive" : "outline"}
+          onClick={() => {
+            product.status === "published"
+              ? handleStatusChange("unpublished")
+              : handleStatusChange("published")
+          }}
         >
-          {product.status === "Published" ? "Unpublish" : "Publish"} Product
+          {product.status === "published" ? "Unpublish" : "Publish"} Product
         </Button>
 
         <Button
-          onClick={() => { router.push(`edit`); }}
+          onClick={() => { router.push(`${id}/edit`) }}
         >
           <Edit className="w-4 h-4 mr-2" />
           Edit Product

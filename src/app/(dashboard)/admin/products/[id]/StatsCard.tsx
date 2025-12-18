@@ -4,7 +4,7 @@ import { IProductDetail } from "@/interfaces/product.interface";
 
 export default function StatsCard({
   product,
-} : {
+}: {
   product: IProductDetail
 }) {
   return (
@@ -30,7 +30,7 @@ export default function StatsCard({
 
       <Card>
         <CardContent>
-          <div className="text-2xl font-bold text-green-600">{product.totalRevenue.toLocaleString()} VND</div>
+          <div className="text-2xl font-bold text-green-600 dark:text-success1-foreground">{product.totalRevenue.toLocaleString()} VND</div>
           <div className="text-muted-foreground">Total Revenue</div>
         </CardContent>
       </Card>
