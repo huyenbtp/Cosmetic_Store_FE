@@ -10,9 +10,11 @@ import SearchBar from "@/components/layout/SearchBar";
 import ProductsFilter from "./ProductsFilter";
 import ProductsTable from "./ProductsTable";
 import { Pagination } from "@/components/layout/Pagination";
-import { IMinMaxFilterData, IProduct } from "@/interfaces/product.interface";
-import productApi, { ProductKey, ProductStatus } from "@/lib/api/product.api";
+import { IFetchedBrand, IFetchedCategory, IMinMaxFilterData, IProduct } from "@/interfaces/product.interface";
 import { updateQueryParams } from "@/lib/utils";
+import productApi, { ProductKey, ProductStatus } from "@/lib/api/product.api";
+import brandApi from "@/lib/api/brand.api";
+import categoryApi from "@/lib/api/category.api";
 
 const mockProducts: IProduct[] = [
   {
@@ -187,6 +189,8 @@ export default function ProductsManagement() {
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
 
+  const [brands, setBrands] = useState<IFetchedBrand[]>([]);
+  const [categories, setCategories] = useState<IFetchedCategory[]>([]);
   const [data, setData] = useState<IProduct[]>([]);
   const [minMaxFilterData, setMinMaxFilterData] = useState<IMinMaxFilterData>(NullMinMaxFilterData);
   const isMinMaxFilterLoad = minMaxFilterData !== NullMinMaxFilterData;
@@ -196,26 +200,33 @@ export default function ProductsManagement() {
   const rawPage = Number(searchParams.get("page"));
   const page = Number.isInteger(rawPage) && rawPage > 0 ? rawPage : 1;
   const searchQuery = searchParams.get("q") || "";
-  const searchBy = searchParams.get("by") || "name";
+  //const searchBy = searchParams.get("by") || "name";
+  const brandId = searchParams.get("brand");
+  const categorySlug = searchParams.get("category");
   const status = searchParams.get("status") || "";
   const [priceRange, setPriceRange] = useState<number[]>([0, 0]);
   const [stockRange, setStockRange] = useState<number[]>([0, 0]);
 
-  const fetchMinMaxFilter = async () => {
-    try {
-      const res = await productApi.fetchProductStats();
-
-      setMinMaxFilterData(res)
-      setPriceRange([res.price.min, res.price.max]);
-      setStockRange([res.stock.min, res.stock.max]);
-    } catch (error) {
-      console.error("Fetch products min/max filter value failed:", error);
-    } finally {
-
-    }
-  };
   useEffect(() => {
-    fetchMinMaxFilter();
+    const initFilters = async () => {
+      try {
+        const [brandRes, categoryRes, minMaxFilterRes] = await Promise.all([
+          brandApi.fetchAllBrands(),
+          categoryApi.fetchAllCategories(),
+          productApi.fetchProductStats(),
+        ]);
+
+        setBrands(brandRes);
+        setCategories(categoryRes);
+        setMinMaxFilterData(minMaxFilterRes)
+        setPriceRange([minMaxFilterRes.price.min, minMaxFilterRes.price.max]);
+        setStockRange([minMaxFilterRes.stock.min, minMaxFilterRes.stock.max]);
+      } catch (err) {
+        console.error("Init filter failed", err);
+      }
+    };
+
+    initFilters();
   }, []);
 
   const fetchProducts = async () => {
@@ -227,7 +238,8 @@ export default function ProductsManagement() {
         page,
         limit,
         q: searchQuery || undefined,
-        by: searchBy as ProductKey || "name",
+        category_slug: categorySlug ?? undefined,
+        brand_id: brandId ?? undefined,
         minPrice: priceRange[0] || undefined,
         maxPrice: priceRange[1],
         minStock: stockRange[0] || undefined,
@@ -246,11 +258,11 @@ export default function ProductsManagement() {
   useEffect(() => {
     const newQuery = updateQueryParams(searchParams, { page: 1 });
     router.push(`?${newQuery}`);
-  }, [isMinMaxFilterLoad, limit, searchQuery, searchBy, priceRange, stockRange]);
+  }, [isMinMaxFilterLoad, limit, searchQuery, priceRange, stockRange]);
 
   useEffect(() => {
     fetchProducts();
-  }, [isMinMaxFilterLoad, page, isMinMaxFilterLoad, limit, searchQuery, searchBy, priceRange, stockRange, status]);
+  }, [isMinMaxFilterLoad, page, isMinMaxFilterLoad, limit, searchQuery, categorySlug, brandId, priceRange, stockRange, status]);
 
   return (
     <div className="px-8 py-6 space-y-8">
@@ -267,10 +279,12 @@ export default function ProductsManagement() {
       <Card>
         <CardHeader>
           <div className="flex flex-col sm:flex-row gap-4">
-            <SearchBar placeholder="Search products..." willUpdateQuery className="w-84" />
+            <SearchBar placeholder="Search products by name, sku" willUpdateQuery className="w-84" />
 
             <ProductsFilter
               data={minMaxFilterData}
+              brands={brands}
+              categories={categories}
               priceRange={priceRange}
               stockRange={stockRange}
               handleApplyPrice={(range) => setPriceRange(range)}

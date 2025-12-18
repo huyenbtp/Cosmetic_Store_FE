@@ -3,11 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTitle, } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import Combobox from "@/components/layout/Combobox";
 import { IAddEditCategory, ICategory } from "@/interfaces/category.interface";
-import { CategorySelect } from "../../../../components/layout/CategorySelect";
 
 const NullCategory: IAddEditCategory = {
-  _id: "",
   parent_id: null,
   name: "",
   slug: "",
@@ -19,9 +18,11 @@ interface AddEditCategoryDialogProps {
   categoryList: ICategory[];
   open: boolean;
   setOpen: (open: boolean) => void;
+  onCreate: (payload: IAddEditCategory) => void;
+  onUpdate: (payload: IAddEditCategory) => void;
 }
 
-export default function AddEditCategoryDialog({ initialData, parentId, categoryList, open, setOpen, }: AddEditCategoryDialogProps) {
+export default function AddEditCategoryDialog({ initialData, parentId, categoryList, open, setOpen, onCreate, onUpdate }: AddEditCategoryDialogProps) {
   const [formData, setFormData] = useState<IAddEditCategory>(NullCategory);
 
   useEffect(() => {
@@ -29,6 +30,24 @@ export default function AddEditCategoryDialog({ initialData, parentId, categoryL
     else if (parentId) setFormData({ ...formData, parent_id: parentId });
     else setFormData(NullCategory);
   }, [initialData, parentId]);
+
+  const getAllChildCategoryIds = (parentId: string) => {
+    const result = [];
+    const stack = [parentId];
+
+    while (stack.length) {
+      const currentId = stack.pop();
+      result.push(currentId);
+
+      const children = categoryList.filter((c) => c.parent_id === currentId)
+
+      children.forEach((c) => stack.push(c._id));
+    }
+
+    return result;
+  };
+
+  const disabledIdsList = formData._id ? getAllChildCategoryIds(formData._id) : [];
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -79,13 +98,19 @@ export default function AddEditCategoryDialog({ initialData, parentId, categoryL
             >
               Parent Category
             </Label>
-            <CategorySelect
-              mode="parent_category"
-              categoryList={categoryList}
-              selectedId={formData.parent_id}
-              editingCategoryId={formData._id}
+            <Combobox
+              items={categoryList}
+              selectedValue={formData.parent_id}
               onChange={(v) => setFormData({ ...formData, parent_id: v })}
+              getLabel={(c) => c.name}
+              getValue={(c) => c._id}
+              getDisabled={(c) => disabledIdsList.includes(c._id)}
+              placeholder="No parent (root category)"
+              emptyText="No category found."
               disabled={parentId !== null}
+              allowNull
+              nullLabel="Root category"
+              variant="outline"
             />
           </div>
 
@@ -104,7 +129,10 @@ export default function AddEditCategoryDialog({ initialData, parentId, categoryL
           <Button
             size="lg"
             className="flex-1"
-            onClick={() => setOpen(false)}
+            onClick={() => {
+              initialData ? onUpdate(formData) : onCreate(formData);
+            }}
+            disabled={!formData.name || !formData.slug}
           >
             {initialData ? "Save" : "Add"}
           </Button>

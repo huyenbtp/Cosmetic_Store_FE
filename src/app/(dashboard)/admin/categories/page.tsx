@@ -4,12 +4,14 @@ import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import { Spinner } from "@/components/ui/spinner"
 import { Plus } from "lucide-react"
-import { ICategory } from "@/interfaces/category.interface"
+import { IAddEditCategory, ICategory } from "@/interfaces/category.interface"
 import { useRouter } from "next/navigation"
 import CategoriesTree from "./CategoriesTree"
 import AddEditCategoryDialog from "./AddEditCategoryDialog"
 import CategoryDetailCard from "./CategoryDetailCard"
+import categoryApi from "@/lib/api/category.api"
 
 const mockCategories: ICategory[] = [
   {
@@ -116,11 +118,6 @@ const mockCategories: ICategory[] = [
   },
 ];
 
-// Fake tree API
-async function fetchCategories() {
-  return mockCategories;
-}
-
 export default function CategoriesPage() {
   const router = useRouter();
   const [data, setData] = useState<ICategory[]>([]);
@@ -128,9 +125,59 @@ export default function CategoriesPage() {
   const [selected, setSelected] = useState<ICategory | null>(null);
   const [isAddEditDialogOpen, setIsAddEditDialogOpen] = useState(false);
   const [selectedParentId, setSelectedParentId] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+
+  const fetchCategories = async () => {
+    setLoading(true);
+
+    try {
+      const res = await categoryApi.fetchAllCategories();
+      setData(res);
+    } catch (error) {
+      console.error("Fetch categories failed:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCreateCategory = async (createData: IAddEditCategory) => {
+    setLoading(true)
+
+    const { _id, ...payload } = createData;
+    try {
+      const res = await categoryApi.createCategory(payload);
+
+      fetchCategories();
+      setSelected(res);
+    } catch (error) {
+      console.error("Create category failed:", error);
+    } finally {
+      setLoading(false);
+      setIsAddEditDialogOpen(false);
+    }
+  };
+
+  const handleUpdateCategory = async (updateData: IAddEditCategory) => {
+    const { _id, ...payload } = updateData;
+    if (!_id) return;
+
+    setLoading(true)
+
+    try {
+      const res = await categoryApi.updateCategory(_id, payload);
+
+      fetchCategories();
+      setSelected(res);
+    } catch (error) {
+      console.error("Create category failed:", error);
+    } finally {
+      setLoading(false);
+      setIsAddEditDialogOpen(false);
+    }
+  };
 
   useEffect(() => {
-    fetchCategories().then(setData)
+    fetchCategories();
   }, [])
 
   return (
@@ -152,14 +199,20 @@ export default function CategoriesPage() {
               className="m-1 h-10"
             />
             <div className="flex-1 overflow-y-auto my-4">
-              <CategoriesTree
-                data={data}
-                search={search}
-                selected={selected}
-                setSelected={(value) => {
-                  setSelected(value);
-                }}
-              />
+              {loading ? (
+                <div className="h-full flex justify-center items-center">
+                  <Spinner className="size-10" />
+                </div>
+              ) : (
+                <CategoriesTree
+                  data={data}
+                  search={search}
+                  selected={selected}
+                  setSelected={(value) => {
+                    setSelected(value);
+                  }}
+                />
+              )}
             </div>
             <Button
               onClick={() => {
@@ -182,12 +235,12 @@ export default function CategoriesPage() {
               <CategoryDetailCard
                 data={selected}
                 categoryList={data}
-                onSaveChanges={() => { }}
+                onSaveChanges={(payload) => { handleUpdateCategory(payload) }}
                 onAddChild={() => {
                   setSelectedParentId(selected._id);
                   setIsAddEditDialogOpen(true);
                 }}
-                onViewProducts={() => { router.push(`products?page=1&q=${selected.name}&by=category`) }}
+                onViewProducts={() => { router.push(`products?page=1&category=${selected.slug}`) }}
               />
             )}
           </div>
@@ -199,6 +252,8 @@ export default function CategoriesPage() {
         categoryList={data}
         open={isAddEditDialogOpen}
         setOpen={setIsAddEditDialogOpen}
+        onCreate={(payload) => handleCreateCategory(payload)}
+        onUpdate={(payload) => handleUpdateCategory(payload)}
       />
     </div>
   );

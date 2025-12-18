@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import ImageUploader, { ImageState } from "@/components/layout/ImageUploader";
 import { IAddEditProduct, IFetchedBrand, IFetchedCategory } from "@/interfaces/product.interface";
+import Combobox from "../Combobox";
 
 const NullProduct: IAddEditProduct = {
   sku: "",
@@ -135,24 +136,20 @@ export default function ProductForm({
                 >
                   Category
                 </Label>
-                <Select
-                  value={data.category._id}
-                  onValueChange={(value) => {
+
+                <Combobox
+                  items={categoryList}
+                  selectedValue={data.category._id}
+                  onChange={(value) => {
                     const newCategory = categoryList.find(item => item._id === value);
                     if (newCategory) setData({ ...data, category: newCategory });
                   }}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select Product Category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {categoryList.map((item) => (
-                      <SelectItem key={item._id} value={item._id}>
-                        {item.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  getLabel={(c) => c.name}
+                  getValue={(c) => c._id}
+                  placeholder="Select Product Category"
+                  emptyText="No category found."
+                  variant="input"
+                />
               </div>
 
               <div>
@@ -164,24 +161,19 @@ export default function ProductForm({
                 >
                   Brand
                 </Label>
-                <Select
-                  value={data.brand._id}
-                  onValueChange={(value) => {
+                <Combobox
+                  items={brandList}
+                  selectedValue={data.brand._id}
+                  onChange={(value) => {
                     const newBrand = brandList.find(item => item._id === value);
                     if (newBrand) setData({ ...data, brand: newBrand });
                   }}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select Brand" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {brandList.map((item) => (
-                      <SelectItem key={item._id} value={item._id}>
-                        {item.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  getLabel={(c) => c.name}
+                  getValue={(c) => c._id}
+                  placeholder="Select Brand"
+                  emptyText="No brand found."
+                  variant="input"
+                />
               </div>
 
               <div>

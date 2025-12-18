@@ -1,14 +1,16 @@
 import { IMinMaxFilterData, IProduct, IProductDetail } from "@/interfaces/product.interface";
 import axios from "@/lib/axios";
 
-export type ProductKey = "name" | "sku" | "category" | "brand";
+export type ProductKey = "name" | "sku";
 export type ProductStatus = "published" | "unpublished";
 
 export interface FetchProductsParams {
   page?: number;
   limit?: number;
   q?: string;
-  by?: "name" | "sku" | "category" | "brand";
+  by?: ProductKey;
+  category_slug?: string;
+  brand_id?: string;
   minStock?: number;
   maxStock?: number;
   minPrice?: number;

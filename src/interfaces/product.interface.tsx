@@ -53,6 +53,7 @@ export interface IAddEditProduct {
 export interface IFetchedCategory {
   _id: string;
   name: string;
+  slug: string;
 }
 
 export interface IFetchedBrand {

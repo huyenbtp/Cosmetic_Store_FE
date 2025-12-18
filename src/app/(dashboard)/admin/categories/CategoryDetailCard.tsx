@@ -3,14 +3,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { CategorySelect } from "../../../../components/layout/CategorySelect";
 import { Edit, Eye, Plus } from "lucide-react"
+import Combobox from "@/components/layout/Combobox";
 import { ICategory } from "@/interfaces/category.interface";
 
 interface CategoryDetailCardProps {
   data: ICategory;
   categoryList: ICategory[];
-  onSaveChanges: () => void;
+  onSaveChanges: (payload: ICategory) => void;
   onAddChild: () => void;
   onViewProducts: () => void;
 }
@@ -27,6 +27,24 @@ export default function CategoryDetailCard({
   useEffect(() => {
     setSelectedChanges(data)
   }, [data]);
+
+  const getAllChildCategoryIds = (parentId: string) => {
+    const result = [];
+    const stack = [parentId];
+
+    while (stack.length) {
+      const currentId = stack.pop();
+      result.push(currentId);
+
+      const children = categoryList.filter((c) => c.parent_id === currentId)
+
+      children.forEach((c) => stack.push(c._id));
+    }
+
+    return result;
+  };
+
+  const disabledIdsList = data._id ? getAllChildCategoryIds(data._id) : [];
 
   return (
     <Card>
@@ -59,12 +77,18 @@ export default function CategoryDetailCard({
 
         <div className="space-y-1">
           <Label htmlFor="category-parent">Parent Category</Label>
-          <CategorySelect
-            mode="parent_category"
-            categoryList={categoryList}
-            selectedId={selectedChanges.parent_id}
-            editingCategoryId={selectedChanges._id}
+          <Combobox
+            items={categoryList}
+            selectedValue={selectedChanges.parent_id}
             onChange={(v) => { setSelectedChanges({ ...selectedChanges, parent_id: v }) }}
+            getLabel={(c) => c.name}
+            getValue={(c) => c._id}
+            getDisabled={(c) => disabledIdsList.includes(c._id)}
+            placeholder="No parent (root category)"
+            emptyText="No category found."
+            allowNull
+            nullLabel="Root category"
+            variant="outline"
           />
         </div>
 
@@ -76,7 +100,7 @@ export default function CategoryDetailCard({
               data.slug === selectedChanges.slug &&
               data.parent_id === selectedChanges.parent_id
             }
-            onClick={onSaveChanges}
+            onClick={() => onSaveChanges(selectedChanges)}
           >
             <Edit />
             Save Changes

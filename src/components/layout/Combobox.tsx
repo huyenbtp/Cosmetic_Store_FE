@@ -4,7 +4,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger, } from "@/components/ui/popover";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { Check, ChevronDown } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export interface ComboboxItem {
   value: string | null;
@@ -32,9 +33,12 @@ interface ComboboxProps<T = any> {
   disabled?: boolean;
   allowNull?: boolean; // có cho option “None” không
   nullLabel?: string;
+
+  variant?: "default" | "outline" | "input" | "link" | "destructive" | "secondary" | "ghost";
+  classname?: string;
 }
 
-export function Combobox<T>({
+export default function Combobox<T>({
   items,
   selectedValue,
   onChange,
@@ -47,6 +51,8 @@ export function Combobox<T>({
   disabled,
   allowNull = false,
   nullLabel = "None",
+  variant = "default",
+  classname = "",
 }: ComboboxProps<T>) {
   const [open, setOpen] = useState(false);
 
@@ -57,12 +63,18 @@ export function Combobox<T>({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
-          variant="outline"
-          className="w-full h-12 justify-between"
+          variant={variant}
+          className={cn("w-full h-12 justify-between",
+            classname
+          )}
           disabled={disabled}
         >
-          {selectedItem ? getLabel(selectedItem) : placeholder}
-          <ChevronsUpDown className="opacity-50" />
+          <span className={cn("overflow-x-hidden font-normal",
+            !selectedItem ? "text-muted-foreground" : ""
+          )}>
+            {selectedItem ? getLabel(selectedItem) : placeholder}
+          </span>
+          <ChevronDown className="opacity-50" />
         </Button>
       </PopoverTrigger>
 

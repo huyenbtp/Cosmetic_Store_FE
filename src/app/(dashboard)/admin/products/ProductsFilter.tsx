@@ -1,10 +1,11 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import Combobox from "@/components/layout/Combobox";
 import ValueRangePicker from "@/components/layout/ValueRangePicker";
 import { useRouter, useSearchParams } from "next/navigation";
 import { updateQueryParams } from "@/lib/utils";
-import { IMinMaxFilterData } from "@/interfaces/product.interface";
+import { IFetchedBrand, IFetchedCategory, IMinMaxFilterData } from "@/interfaces/product.interface";
 import { ProductKey, ProductStatus } from "@/lib/api/product.api";
 
 export function getProductStatusBadge(status: string) {
@@ -19,12 +20,16 @@ export function getProductStatusBadge(status: string) {
 
 export default function ProductsFilter({
   data,
+  brands,
+  categories,
   priceRange,
   stockRange,
   handleApplyPrice,
   handleApplyStock,
 }: {
   data: IMinMaxFilterData;
+  brands: IFetchedBrand[];
+  categories: IFetchedCategory[];
   priceRange: number[];
   stockRange: number[];
   handleApplyPrice: (range: number[]) => void;
@@ -33,12 +38,30 @@ export default function ProductsFilter({
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const searchBy = searchParams.get("by") || "name";
+  //const searchBy = searchParams.get("by") || "name";
+  const brandId = searchParams.get("brand");
+  const categorySlug = searchParams.get("category");
   const status = searchParams.get("status") || "";
 
   const handleSearchByChange = (value: ProductKey) => {
     const newQuery = updateQueryParams(searchParams, {
       by: value,
+      page: 1,
+    });
+    router.push(`?${newQuery}`);
+  }
+
+  const handleCategoryChange = (value: string | null) => {
+    const newQuery = updateQueryParams(searchParams, {
+      category: value ? value : "",
+      page: 1,
+    });
+    router.push(`?${newQuery}`);
+  }
+
+  const handleBrandChange = (value: string | null) => {
+    const newQuery = updateQueryParams(searchParams, {
+      brand: value ? value : "",
       page: 1,
     });
     router.push(`?${newQuery}`);
@@ -54,17 +77,42 @@ export default function ProductsFilter({
 
   return (
     <>
+      {/** 
       <Select value={searchBy} onValueChange={(value: ProductKey) => handleSearchByChange(value)}>
-        <SelectTrigger size="sm" className="w-full sm:w-42">
+        <SelectTrigger size="sm" className="w-full sm:w-38">
           <SelectValue placeholder="Search by ..." />
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="name">Product name</SelectItem>
           <SelectItem value="sku">SKU</SelectItem>
-          <SelectItem value="category">Category</SelectItem>
-          <SelectItem value="brand">Brand</SelectItem>
         </SelectContent>
       </Select>
+      */}
+      <Combobox
+        items={categories}
+        selectedValue={categorySlug}
+        onChange={handleCategoryChange}
+        getLabel={(c) => c.name}
+        getValue={(c) => c.slug}
+        placeholder="Category"
+        allowNull
+        nullLabel="All categories"
+        variant="input"
+        classname="w-30 h-auto"
+      />
+
+      <Combobox
+        items={brands}
+        selectedValue={brandId}
+        onChange={handleBrandChange}
+        getLabel={(b) => b.name}
+        getValue={(b) => b._id}
+        placeholder="Brand"
+        allowNull
+        nullLabel="All brands"
+        variant="input"
+        classname="w-30 h-auto"
+      />
 
       <ValueRangePicker
         placeholder="Stock Quantity"
