@@ -12,6 +12,7 @@ import StaffsFilter from "./StaffsFilter";
 import StaffsTable from "./StaffsTable";
 import { Pagination } from "@/components/layout/Pagination";
 import { IStaff } from "@/interfaces/staff.interface";
+import staffApi, { AccountStatus, StaffStatus } from "@/lib/api/staff.api";
 
 const mockStaffs: IStaff[] = [
   {
@@ -126,27 +127,43 @@ type StaffKey = "staff_code" | "full_name" | "phone";
 export default function StaffsManagement() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [loading, setLoading] = useState(false);
 
-  const page = Number(searchParams.get("page") || 1) || 1;
-  const searchQuery = searchParams.get("q") || "";
-  const empStatus = searchParams.get("empStatus") || "";
-  const role = searchParams.get("role") || "";
-  const accStatus = searchParams.get("accStatus") || "";
-
-  const [limit, setLimit] = useState(7);
-  const [searchBy, setSearchBy] = useState<StaffKey>("staff_code");
   const [data, setData] = useState<IStaff[]>([]);
   const [total, setTotal] = useState(0);
 
-  const fetchStaffs = async () => {
+  const [limit, setLimit] = useState(7);
+  const rawPage = Number(searchParams.get("page"));
+  const page = Number.isInteger(rawPage) && rawPage > 0 ? rawPage : 1;
+  const searchQuery = searchParams.get("q") || "";
+  const staffStatus = searchParams.get("empStatus") || "";
+  const role = searchParams.get("role") || "";
+  const accountStatus = searchParams.get("accStatus") || "";
 
+  const fetchStaffs = async () => {
+    setLoading(true);
+
+    try {
+      const res = await staffApi.fetchStaffs({
+        page,
+        limit,
+        q: searchQuery || undefined,
+        staffStatus: staffStatus as StaffStatus || undefined,
+        role: role ?? undefined,
+        accountStatus: accountStatus as AccountStatus || undefined,
+      });
+      setData(res.data);
+      setTotal(res.pagination?.total ?? 0);
+    } catch (error) {
+      console.error("Fetch staffs failed:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     fetchStaffs();
-    setData(mockStaffs.slice(0, limit)) //sau khi fetch data thật thì xóa dòng này đi
-    setTotal(mockStaffs.length)
-  }, [page, limit, searchQuery, searchBy, empStatus, role, accStatus]);
+  }, [page, limit, searchQuery, staffStatus, role, accountStatus]);
 
   return (
     <div className="px-8 py-6 space-y-8">
@@ -165,8 +182,9 @@ export default function StaffsManagement() {
       <Card>
         <CardHeader>
           <div className="flex flex-col sm:flex-row gap-4">
-            <SearchBar placeholder="Search staffs..." willUpdateQuery />
+            <SearchBar placeholder="Search staffs by name, staff code, phone" willUpdateQuery />
 
+            {/** 
             <Select value={searchBy} onValueChange={(value: StaffKey) => setSearchBy(value)}>
               <SelectTrigger size="sm" className="w-full sm:w-48">
                 <SelectValue placeholder="Search by ..." />
@@ -177,6 +195,7 @@ export default function StaffsManagement() {
                 <SelectItem value="phone">Phone number</SelectItem>
               </SelectContent>
             </Select>
+            */}
 
             <StaffsFilter />
           </div>
@@ -185,6 +204,7 @@ export default function StaffsManagement() {
         <CardContent>
           <Suspense fallback={<Spinner />}>
             <StaffsTable
+              loading={loading}
               data={data}
               onView={(id) => { router.push(`staffs/${id}`) }}
               onEdit={(id) => { router.push(`staffs/${id}/edit`) }}

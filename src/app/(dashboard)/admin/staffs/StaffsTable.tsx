@@ -4,6 +4,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Eye, Edit, } from "lucide-react";
 import { IStaff } from "@/interfaces/staff.interface";
+import { Spinner } from "@/components/ui/spinner";
 
 export function getStatusStyle(status: string) {
   if (status === "active") {
@@ -16,10 +17,12 @@ export function getStatusStyle(status: string) {
 };
 
 export default function StaffsTable({
+  loading,
   data,
   onView,
   onEdit,
 }: {
+  loading: boolean;
   data: IStaff[];
   onView: (id: string) => void;
   onEdit: (id: string) => void;
@@ -40,7 +43,13 @@ export default function StaffsTable({
       </TableHeader>
 
       <TableBody>
-        {data.length > 0 ? (data.map((staff) => (
+        {loading ? (
+          <TableRow>
+            <TableCell colSpan={7} align="center">
+              <Spinner className="size-10" />
+            </TableCell>
+          </TableRow>
+        ) : data.length > 0 ? (data.map((staff) => (
           <TableRow key={staff._id}>
             <TableCell className="w-14/100 ">
               {staff.staff_code}
@@ -133,7 +142,7 @@ export default function StaffsTable({
         ))) : (
           <TableRow>
             <TableCell colSpan={7} align="center">
-              Không có dữ liệu
+              No data available
             </TableCell>
           </TableRow>
         )}

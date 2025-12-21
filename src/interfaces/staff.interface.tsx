@@ -1,4 +1,4 @@
-import { IAddEditUserAccount, IUserAccount, IUserAccountDetail } from "./userAccount.interface";
+import { IAddEditUserAccount, IEditUserAccount, IUserAccount, IUserAccountDetail } from "./userAccount.interface";
 
 export interface IStaff {
   _id: string;
@@ -29,7 +29,7 @@ export interface IStaffDetail {
 
 export interface IStaffPurchasesHandled {
   _id: string;
-  receipt_code: string;
+  order_code: string;
   customerName: string;
   date: string;
   final_amount: number;
@@ -37,8 +37,6 @@ export interface IStaffPurchasesHandled {
 }
 
 export interface IAddEditStaff {
-  _id?: string;
-  staff_code?: string;
   full_name: string;
   gender: string;
   dob: string;
@@ -47,4 +45,15 @@ export interface IAddEditStaff {
   position: string;
   status: string;
   account: IAddEditUserAccount;
+}
+
+export interface IEditStaff {
+  full_name: string;
+  gender: string;
+  dob: string;
+  phone: string;
+  image: string;
+  position: string;
+  status: string;
+  account: IEditUserAccount;
 }

@@ -1,12 +1,14 @@
 "use client"
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import StaffForm from "../../StaffForm";
-import { IAddEditStaff } from "@/interfaces/staff.interface";
+import { IAddEditStaff, IEditStaff } from "@/interfaces/staff.interface";
+import staffApi from "@/lib/api/staff.api";
+import { Spinner } from "@/components/ui/spinner";
+import { ImageState } from "@/components/layout/ImageUploader";
 
 const mockStaff: IAddEditStaff = {
-  _id: '1',
   full_name: "Sarah Johnson",
   gender: "female",
   dob: "1998-02-25T00:00:00",
@@ -15,7 +17,6 @@ const mockStaff: IAddEditStaff = {
   position: "cashier",
   status: "active",
   account: {
-    _id: "1",
     username: "SarahJohnson",
     role: "cashier",
     status: "active",
@@ -24,18 +25,68 @@ const mockStaff: IAddEditStaff = {
 
 export default function EditStaff() {
   const router = useRouter();
-  const { id } = useParams();
-  const [data, setData] = useState<IAddEditStaff>(mockStaff);
+  const { id } = useParams<{ id: string }>();
+  const [data, setData] = useState<IEditStaff>();
+  const [loading, setLoading] = useState(false);
 
-  const handleSave = async (data: IAddEditStaff) => {
-    router.replace("./")
+  const fetchStaff = async () => {
+    setLoading(true)
+    try {
+      const res = await staffApi.fetchStaffByIdToAdminEdit(id);
+      setData(res);
+      console.log(res)
+    } catch (error) {
+      console.error("Fetch staff failed:", error);
+    } finally {
+      setLoading(false)
+    }
+  };
+
+  useEffect(() => {
+    fetchStaff();
+
+  }, []);
+
+  const handleSave = async (updateData: IEditStaff, file: File | null, imageState: ImageState) => {
+    setLoading(true)
+
+    try {
+      const payload: any = {
+        ...updateData,
+        staffStatus: updateData.status,
+        accountStatus: updateData.account.status,
+        role: updateData.account.role,
+      }
+
+      if (imageState === "new") {
+        payload.image = file
+      }
+
+      if (imageState === "remove") {
+        payload.image = null
+      }
+
+      const res = await staffApi.updateStaff(id, payload)
+
+      router.replace(`../${res._id}`)
+    } catch (error) {
+      console.error("Save staff failed:", error);
+    } finally {
+      setLoading(false)
+    }
   }
 
+  if (loading) return (
+    <div className="h-full flex justify-center items-center">
+      <Spinner className="size-12" />
+    </div>
+  )
   return (
     <StaffForm
       mode="edit"
+      loading={loading}
       initialData={data}
-      onSubmit={(data) => handleSave(data)}
+      onSubmit={(data, file, state) => { handleSave(data, file, state) }}
     />
   );
 }

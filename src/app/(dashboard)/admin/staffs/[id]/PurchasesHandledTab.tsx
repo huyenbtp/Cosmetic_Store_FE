@@ -21,7 +21,7 @@ export default function PurchasesHandledTab({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Receipt Code</TableHead>
+              <TableHead>Order Code</TableHead>
               <TableHead>Customer Name</TableHead>
               <TableHead>Purchase Date</TableHead>
               <TableHead className="text-right pr-8">Total</TableHead>
@@ -30,9 +30,9 @@ export default function PurchasesHandledTab({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.map((item) => (
+            {data && data.length > 0 && data.map((item) => (
               <TableRow key={item._id}>
-                <TableCell className="w-2/9 font-medium">{item.receipt_code}</TableCell>
+                <TableCell className="w-2/9 font-medium">{item.order_code}</TableCell>
                 <TableCell className="w-2/9 text-muted-foreground">{item.customerName}</TableCell>
                 <TableCell className="w-2/9 text-muted-foreground">
                   {dayjs(item.date).format("DD/MM/YYYY - HH:mm a")}

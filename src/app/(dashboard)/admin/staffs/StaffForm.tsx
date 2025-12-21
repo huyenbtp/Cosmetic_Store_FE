@@ -8,7 +8,7 @@ import { Save } from "lucide-react";
 import { getStaffStatusBadge } from "./StaffsFilter";
 import dayjs from "dayjs";
 import { IAddEditStaff } from "@/interfaces/staff.interface";
-import ImageUploader from "@/components/layout/ImageUploader";
+import ImageUploader, { ImageState } from "@/components/layout/ImageUploader";
 
 const NullStaff: IAddEditStaff = {
   full_name: "",
@@ -28,18 +28,33 @@ const NullStaff: IAddEditStaff = {
 
 interface StaffFormProps {
   mode: "create" | "edit";
+  loading?: boolean;
   initialData?: IAddEditStaff;
-  onSubmit: (data: IAddEditStaff) => void;
+  onSubmit: (data: IAddEditStaff, file: File | null, imageState: ImageState) => void;
 }
 
-export default function StaffForm({ mode, initialData, onSubmit }: StaffFormProps) {
+export default function StaffForm({
+  mode,
+  loading = false,
+  initialData,
+  onSubmit
+}: StaffFormProps) {
   const [data, setData] = useState(initialData ?? NullStaff);
   const [accountData, setAccountData] = useState(data.account);
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [file, setFile] = useState<File | null>(null);
+  const [imageState, setImageState] = useState<ImageState>("keep");
 
   useEffect(() => {
     setData({ ...data, account: accountData });
   }, [accountData]);
+
+  useEffect(() => {
+    if (initialData) {
+      setData(initialData);
+      setAccountData(data.account);
+    }
+  }, [initialData]);
 
   return (
     <div className="h-full flex flex-col px-8 py-6 space-y-6">
@@ -49,7 +64,10 @@ export default function StaffForm({ mode, initialData, onSubmit }: StaffFormProp
         </h1>
 
         <Button
-          onClick={() => onSubmit(data)}
+          disabled={loading || !data.full_name || !data.gender || !data.dob
+            || !data.phone || !data.position || !data.account.role || !data.account.status
+            || (mode === "create" && (!data.account.username || !data.account.password || !confirmPassword))}
+          onClick={() => onSubmit(data, file, imageState)}
         >
           <Save className="w-4 h-4 mr-2" />
           {mode === "create" ? "Add New Staff" : "Save Changes"}
@@ -187,25 +205,25 @@ export default function StaffForm({ mode, initialData, onSubmit }: StaffFormProp
             </div>
 
             <div className="space-y-6">
-              <div>
-                <Label
-                  htmlFor="account-username"
-                  className={`transition-all text-muted-foreground
-                    ${accountData.username.trim() === "" ? "opacity-0 h-0 -translate-y-2" : "opacity-100 mb-2"}
-                  `}
-                >
-                  Username
-                </Label>
-                <Input
-                  id="account-username"
-                  value={accountData.username}
-                  onChange={(e) => setAccountData({ ...accountData, username: e.target.value })}
-                  placeholder="Account's Username"
-                  className="h-12"
-                />
-              </div>
-              {mode === "create" &&
+              {mode === "create" && accountData && (
                 <>
+                  <div>
+                    <Label
+                      htmlFor="account-username"
+                      className={`transition-all text-muted-foreground
+                        ${!accountData.username || accountData.username.trim() === "" ? "opacity-0 h-0 -translate-y-2" : "opacity-100 mb-2"}
+                      `}
+                    >
+                      Username
+                    </Label>
+                    <Input
+                      id="account-username"
+                      value={accountData.username}
+                      onChange={(e) => setAccountData({ ...accountData, username: e.target.value })}
+                      placeholder="Account's Username"
+                      className="h-12"
+                    />
+                  </div>
                   <div>
                     <Label
                       htmlFor="account-password"
@@ -224,7 +242,6 @@ export default function StaffForm({ mode, initialData, onSubmit }: StaffFormProp
                       className="h-12"
                     />
                   </div>
-
                   <div>
                     <Label
                       htmlFor="account-confirm-password"
@@ -244,7 +261,7 @@ export default function StaffForm({ mode, initialData, onSubmit }: StaffFormProp
                     />
                   </div>
                 </>
-              }
+              )}
 
               <div>
                 <Label
@@ -301,7 +318,10 @@ export default function StaffForm({ mode, initialData, onSubmit }: StaffFormProp
           <CardContent className="space-y-4">
             <ImageUploader
               value={data.image}
-              onChange={(value) => setData({ ...data, image: value || "" })}
+              onChange={(value, state) => {
+                setFile(value);
+                setImageState(state);
+              }}
               className="w-full h-80 rounded-lg border object-contain"
               label="Staff Profile Picture"
               description="Upload a profile picture for this staff."

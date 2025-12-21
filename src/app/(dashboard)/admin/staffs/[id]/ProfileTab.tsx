@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { IStaffDetail } from "@/interfaces/staff.interface";
 import dayjs from "dayjs";
-import { Calendar, Mars, Phone, User, Venus } from "lucide-react";
+import { Calendar, CircleUser, Mars, Phone, User, Venus } from "lucide-react";
 import { getStaffStatusBadge } from "../StaffsFilter";
 import { capitalizeWords } from "@/lib/utils";
 
@@ -73,7 +73,6 @@ export default function ProfileTab({
             </div>
           </div>
 
-
           <div className="grid grid-cols-2 gap-4 p-3 pt-6 border-t">
             <div>
               <Label className="text-sm text-muted-foreground">Employee Since</Label>
@@ -106,6 +105,37 @@ export default function ProfileTab({
           <CardTitle>Account Information</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
+          <div className="flex items-center gap-4">
+            <div className="flex justify-center items-center w-12 h-12 bg-muted rounded-full">
+              <CircleUser className="w-5 h-5 text-muted-foreground" />
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Username</p>
+              <p className="font-medium">
+                {data.account.username}
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4 p-3 pt-6 border-t">
+            <div>
+              <Label className="text-sm text-muted-foreground">Last Updated</Label>
+              <p className="font-medium">
+                {data.account.updatedAt && dayjs(data.account.updatedAt).format("MMMM D, YYYY")}
+              </p>
+            </div>
+            <div></div>
+            <div>
+              <Label className="text-sm text-muted-foreground">Role</Label>
+              <Badge variant="outline">
+                {capitalizeWords(data.account.role)}
+              </Badge>
+            </div>
+            <div>
+              <Label className="text-sm text-muted-foreground">Status</Label>
+              {getStaffStatusBadge(data.account.status)}
+            </div>
+          </div>
 
 
         </CardContent>

@@ -15,9 +15,13 @@ export interface IUserAccountDetail {
 }
 
 export interface IAddEditUserAccount {
-  _id?: string;
-  username: string;
+  username?: string;
   password?: string;
+  role: string;
+  status: string;
+}
+
+export interface IEditUserAccount {
   role: string;
   status: string;
 }

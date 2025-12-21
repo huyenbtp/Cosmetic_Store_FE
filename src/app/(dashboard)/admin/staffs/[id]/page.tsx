@@ -1,9 +1,10 @@
 "use client"
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Spinner } from "@/components/ui/spinner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ImageWithFallback } from "@/components/layout/ImageWithFallback";
 import { Edit, Phone, } from "lucide-react";
@@ -14,6 +15,7 @@ import dayjs from "dayjs";
 import { useParams, useRouter } from "next/navigation";
 import { IStaffDetail } from "@/interfaces/staff.interface";
 import { capitalizeWords } from "@/lib/utils";
+import staffApi from "@/lib/api/staff.api";
 
 const mockStaff: IStaffDetail = {
   _id: '1',
@@ -38,7 +40,7 @@ const mockStaff: IStaffDetail = {
   purchasesHandled: [
     {
       _id: "REC-001",
-      receipt_code: "REC-29112025-122530",
+      order_code: "REC-29112025-122530",
       customerName: "Mike Chen",
       date: "2025-11-26T08:00:00",
       final_amount: 565500,
@@ -46,7 +48,7 @@ const mockStaff: IStaffDetail = {
     },
     {
       _id: "REP-015",
-      receipt_code: "REC-015",
+      order_code: "REC-015",
       customerName: "Emma Wilson",
       date: "2025-10-11T09:30:00",
       final_amount: 825200,
@@ -54,7 +56,7 @@ const mockStaff: IStaffDetail = {
     },
     {
       _id: "REP-022",
-      receipt_code: "REC-022",
+      order_code: "REC-022",
       customerName: "David Brown",
       date: "2025-07-28T08:00:00",
       final_amount: 374100,
@@ -62,7 +64,7 @@ const mockStaff: IStaffDetail = {
     },
     {
       _id: "REP-031",
-      receipt_code: "REC-031",
+      order_code: "REC-031",
       customerName: "Lisa Garcia",
       date: "2025-06-12T09:30:00",
       final_amount: 1100000,
@@ -70,7 +72,7 @@ const mockStaff: IStaffDetail = {
     },
     {
       _id: "REP-045",
-      receipt_code: "REC-045",
+      order_code: "REC-045",
       customerName: "James Taylor",
       date: "2025-05-03T09:30:00",
       final_amount: 425500,
@@ -79,12 +81,34 @@ const mockStaff: IStaffDetail = {
   ]
 };
 
-export default function ProductDetail() {
+export default function StaffDetail() {
   const router = useRouter();
-  const { id } = useParams()
-  const [data, setData] = useState<IStaffDetail>(mockStaff);
+  const { id } = useParams<{ id: string }>();
+  const [data, setData] = useState<IStaffDetail>();
+  const [loading, setLoading] = useState(false);
 
-  return (
+  const fetchStaff = async () => {
+    setLoading(true)
+    try {
+      const res = await staffApi.fetchStaffById(id);
+      setData(res);
+    } catch (error) {
+      console.error("Fetch staff failed:", error);
+    } finally {
+      setLoading(false)
+    }
+  };
+
+  useEffect(() => {
+    fetchStaff();
+  }, []);
+
+  if (loading) return (
+    <div className="h-full flex justify-center items-center">
+      <Spinner className="size-12" />
+    </div>
+  )
+  if (data) return (
     <div className="px-8 py-6 space-y-6 flex flex-col h-full">
       <Card className="py-4">
         <CardContent className="flex gap-4 px-4">
@@ -110,14 +134,6 @@ export default function ProductDetail() {
           </div>
 
           <div className="flex flex-col self-end gap-3">
-            <Button
-              variant="outline"
-              onClick={() => { }}
-            >
-              <Edit className="w-4 h-4 mr-2" />
-              View Account
-            </Button>
-
             <Button
               className="justify-start"
               onClick={() => { router.push(`${id}/edit`) }}
