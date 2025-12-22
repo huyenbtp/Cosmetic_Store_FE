@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
 import { ChevronRight, Plus } from "lucide-react";
 import { ImageWithFallback } from "@/components/layout/ImageWithFallback";
+import productApi from "@/lib/api/product.api";
 
 export interface IFetchedProduct {
   _id: string;
@@ -43,7 +44,6 @@ export default function AddEditImportItemDialog({
   open: boolean;
   setOpen: (open: boolean) => void;
   handleAddItem: (selectedProduct: any, quantity: number, unitCost: number) => void;
-  onAddNewProduct: () => void;
 }) {
   const [selectedProduct, setSelectedProduct] = useState<IFetchedProduct | null>(null);
   const [quantity, setQuantity] = useState(1);
@@ -53,24 +53,20 @@ export default function AddEditImportItemDialog({
   const productFound = selectedProduct ? true : false;
 
   const fetchProduct = async () => {
-    setLoading(true);
-    // Mô phỏng loading trong 500ms rồi render giao diện
-    const timeout = setTimeout(() => {
-      setLoading(false);
-    }, 500);
-    return () => clearTimeout(timeout);
+    setLoading(true)
+    try {
+      const res = await productApi.fetchProductBySKU(searchSku);
+      setSelectedProduct(res ?? null);
+    } finally {
+      setLoading(false)
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      if (!searchSku) return;
+      if (!searchSku.trim()) return;
 
       fetchProduct();
-
-      const res = mockProducts.find((item) => item.sku === searchSku);
-
-      if (res) setSelectedProduct(res)
-      else setSelectedProduct(null);
     }
   };
 

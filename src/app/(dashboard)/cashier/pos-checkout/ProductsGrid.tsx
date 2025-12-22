@@ -3,20 +3,11 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ImageWithFallback } from "@/components/layout/ImageWithFallback";
-
-interface Product {
-  _id: string;
-  name: string;
-  category: string;
-  price: number;
-  stock: number;
-  image: string;
-  brand: string;
-}
+import { ICheckoutProduct } from "@/interfaces/product.interface";
 
 interface ProductsGridProps {
-  data: Product[];
-  handleAddToCart: (item: Product) => void;
+  data: ICheckoutProduct[];
+  handleAddToCart: (item: ICheckoutProduct) => void;
 }
 export default function ProductsGrid({
   data,
@@ -50,10 +41,10 @@ export default function ProductsGrid({
                 </Badge>
                 <div className="flex items-center justify-between mt-2">
                   <span className="font-semibold text-green-600 dark:text-success1-foreground">
-                    {item.price.toLocaleString()} ₫
+                    {item.selling_price.toLocaleString()} ₫
                   </span>
                   <span className="text-xs text-muted-foreground">
-                    Stock: {item.stock}
+                    Stock: {item.stock_quantity}
                   </span>
                 </div>
               </div>

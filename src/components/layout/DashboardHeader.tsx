@@ -10,13 +10,24 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
-import { logout } from "@/lib/auth";
 import { useRouter } from "next/navigation";
+import { clearAuth } from "@/lib/auth";
+import authApi from "@/lib/api/auth.api";
 
 export function DashboardHeader() {
   const { theme, setTheme } = useTheme()
   const router = useRouter();
 
+  const user = JSON.parse(localStorage.getItem("auth_user") || "{}");
+
+  const handleLogout = async () => {
+    //await authApi.logout();
+    clearAuth();
+    localStorage.removeItem("auth_user");
+
+    router.push("/login");
+  };
+  
   return (
     <header className="bg-background border-b px-5 py-3 flex items-center justify-end sticky top-0">
       {/**
@@ -49,8 +60,8 @@ export function DashboardHeader() {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="relative h-8 w-8 rounded-full">
               <Avatar className="h-8 w-8">
-                <AvatarImage src="/placeholder-avatar.jpg" alt="Admin" />
-                <AvatarFallback className="bg-primary text-white">A</AvatarFallback>
+                <AvatarImage src={user.image} alt="Profile Picture" />
+                <AvatarFallback className="bg-primary text-white">{user.full_name[0]}</AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
@@ -68,10 +79,7 @@ export function DashboardHeader() {
 
             <DropdownMenuSeparator />
 
-            <DropdownMenuItem onClick={() => {
-              logout()
-              router.push("/login");
-            }}>
+            <DropdownMenuItem onClick={handleLogout}>
               <LogOut className="mr-2 h-4 w-4" />
               <span>Logout</span>
             </DropdownMenuItem>

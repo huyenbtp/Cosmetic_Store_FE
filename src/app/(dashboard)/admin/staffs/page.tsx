@@ -205,7 +205,7 @@ export default function StaffsManagement() {
           <Suspense fallback={<Spinner />}>
             <StaffsTable
               loading={loading}
-              data={data}
+              data={data || []}
               onView={(id) => { router.push(`staffs/${id}`) }}
               onEdit={(id) => { router.push(`staffs/${id}/edit`) }}
             />

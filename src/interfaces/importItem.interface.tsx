@@ -1,7 +1,6 @@
 export interface IImportItem {
   _id: string;
   import_id: string;
-  product_id: string;
   product: {
     _id: string;
     sku: string;
@@ -13,8 +12,6 @@ export interface IImportItem {
 }
 
 export interface IAddEditImportItem {
-  _id?: string;
-  import_id?: string;
   product_id: string;
   quantity: number;
   unit_price: number;

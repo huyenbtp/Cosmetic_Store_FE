@@ -9,6 +9,17 @@ export interface IProduct {
   image: string;
 }
 
+export interface ICheckoutProduct {
+  _id: string;
+  name: string;
+  sku: string;
+  category: string;
+  brand: string;
+  stock_quantity: number;
+  selling_price: number;
+  image: string;
+}
+
 export interface IMinMaxFilterData {
   price: {
     min: number;

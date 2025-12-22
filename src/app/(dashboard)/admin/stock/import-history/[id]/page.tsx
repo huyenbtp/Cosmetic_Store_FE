@@ -1,18 +1,19 @@
 "use client"
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import StatCards from "./StatCards";
 import ImportItemsCard from "./ImportItemsCard";
 import ImportInformation from "./ImportInformation";
 import dayjs from "dayjs";
 import { useParams, useRouter } from "next/navigation";
 import { IImportDetail } from "@/interfaces/import.interface";
+import importApi from "@/lib/api/importOrder.api";
 
 const mockImport: IImportDetail = {
   _id: "IMP-001",
   import_code: "IMP-15112025-093000",
-  staff_id: "1",
   staff: {
     _id: "1",
     staff_code: "CSH-2025-001",
@@ -22,7 +23,6 @@ const mockImport: IImportDetail = {
     {
       _id: "1",
       import_id: "1",
-      product_id: "1",
       product: {
         _id: "1",
         name: "Kem chống nắng Anessa Perfect UV",
@@ -35,7 +35,6 @@ const mockImport: IImportDetail = {
     {
       _id: "2",
       import_id: "1",
-      product_id: "2",
       product: {
         _id: "2",
         name: "Sữa rửa mặt Innisfree Green Tea",
@@ -48,7 +47,6 @@ const mockImport: IImportDetail = {
     {
       _id: "3",
       import_id: "1",
-      product_id: "3",
       product: {
         _id: "3",
         name: "Phấn phủ Fit Me Matte + Poreles",
@@ -69,10 +67,42 @@ const mockImport: IImportDetail = {
 
 export default function ImportDetail() {
   const router = useRouter();
-  const { id } = useParams()
-  const [data, setData] = useState<IImportDetail>(mockImport);
+  const { id } = useParams<{ id: string }>();
+  const [data, setData] = useState<IImportDetail>();
+  const [loading, setLoading] = useState(false);
 
-  return (
+  const fetchImport = async () => {
+    setLoading(true)
+    try {
+      const res = await importApi.fetchImportById(id);
+      setData(res);
+    } catch (error) {
+      console.error("Fetch import failed:", error);
+    } finally {
+      setLoading(false)
+    }
+  };
+
+  useEffect(() => {
+    fetchImport();
+  }, []);
+
+  const handleNoteChange = async (note: string) => {
+    try {
+      await importApi.updateNote(id, note);
+    } catch (error) {
+      console.error("Update note failed:", error);
+    } finally {
+      fetchImport()
+    }
+  };
+
+  if (loading) return (
+    <div className="h-full flex justify-center items-center">
+      <Spinner className="size-12" />
+    </div>
+  )
+  if (data) return (
     <div className="px-8 py-6 space-y-6">
       <div className="flex items-center gap-4">
         <div className="flex-1 mr-10">
@@ -96,6 +126,7 @@ export default function ImportDetail() {
           <ImportInformation
             data={data}
             onChangeNote={(note) => {
+              handleNoteChange(note)
               router.refresh()
             }}
           />

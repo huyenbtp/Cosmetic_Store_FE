@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Phone, Star, UserPlus } from "lucide-react";
 import SearchBar from "@/components/layout/SearchBar";
@@ -15,28 +14,20 @@ import CheckoutPaymentSheet from "./CheckoutPaymentSheet";
 import { ICustomer } from "@/interfaces/customer.interface";
 import { IDiscountCode } from "@/interfaces/order.interface";
 import DiscountCodePickerDialog from "./DiscountCodePickerDialog";
+import { ICheckoutProduct } from "@/interfaces/product.interface";
 
-export interface IProduct {
-  _id: string;
-  name: string;
-  category: string;
-  price: number;
-  stock: number;
-  image: string;
-  brand: string;
-}
-
-export interface ICartItem extends IProduct {
+export interface ICartItem extends ICheckoutProduct {
   quantity: number;
 }
 
-const cosmeticProducts: IProduct[] = [
+/*
+const cosmeticProducts: ICheckoutProduct[] = [
   {
     _id: "COS-001",
     name: "Hydrating Facial Serum maicbnh ựhdbkabcejcb",
     category: "Skincare",
-    price: 450900,
-    stock: 25,
+    selling_price: 450900,
+    stock_quantity: 25,
     image: "https://picsum.photos/200/300?random=1",
     brand: "GlowLab"
   },
@@ -44,8 +35,8 @@ const cosmeticProducts: IProduct[] = [
     _id: "COS-002",
     name: "Vitamin C Moisturizer",
     category: "Skincare",
-    price: 385000,
-    stock: 30,
+    selling_price: 385000,
+    stock_quantity: 30,
     image: "https://picsum.photos/200/300?random=2",
     brand: "PureGlow"
   },
@@ -53,8 +44,8 @@ const cosmeticProducts: IProduct[] = [
     _id: "COS-003",
     name: "Matte Liquid Lipstick",
     category: "Makeup",
-    price: 249000,
-    stock: 42,
+    selling_price: 249000,
+    stock_quantity: 42,
     image: "https://picsum.photos/200/300?random=3",
     brand: "ColorPop"
   },
@@ -62,8 +53,8 @@ const cosmeticProducts: IProduct[] = [
     _id: "COS-004",
     name: "Long-Wear Foundation",
     category: "Makeup",
-    price: 520000,
-    stock: 18,
+    selling_price: 520000,
+    stock_quantity: 18,
     image: "https://picsum.photos/200/300?random=4",
     brand: "Flawless"
   },
@@ -71,8 +62,8 @@ const cosmeticProducts: IProduct[] = [
     _id: "COS-005",
     name: "Rose Water Toner",
     category: "Skincare",
-    price: 289000,
-    stock: 35,
+    selling_price: 289000,
+    stock_quantity: 35,
     image: "https://picsum.photos/200/300?random=5",
     brand: "Nature's Best"
   },
@@ -80,8 +71,8 @@ const cosmeticProducts: IProduct[] = [
     _id: "COS-006",
     name: "Eyeshadow Palette",
     category: "Makeup",
-    price: 499000,
-    stock: 22,
+    selling_price: 499000,
+    stock_quantity: 22,
     image: "https://picsum.photos/200/300?random=6",
     brand: "Glam Studio"
   },
@@ -89,8 +80,8 @@ const cosmeticProducts: IProduct[] = [
     _id: "COS-007",
     name: "Anti-Aging Night Cream",
     category: "Skincare",
-    price: 685000,
-    stock: 15,
+    selling_price: 685000,
+    stock_quantity: 15,
     image: "https://picsum.photos/200/300?random=7",
     brand: "Youth Elixir"
   },
@@ -98,8 +89,8 @@ const cosmeticProducts: IProduct[] = [
     _id: "COS-008",
     name: "Waterproof Mascara",
     category: "Makeup",
-    price: 229000,
-    stock: 50,
+    selling_price: 229000,
+    stock_quantity: 50,
     image: "https://picsum.photos/200/300?random=8",
     brand: "LashPro"
   },
@@ -107,8 +98,8 @@ const cosmeticProducts: IProduct[] = [
     _id: "COS-009",
     name: "Gentle Cleansing Foam",
     category: "Skincare",
-    price: 320000,
-    stock: 28,
+    selling_price: 320000,
+    stock_quantity: 28,
     image: "https://picsum.photos/200/300?random=9",
     brand: "Pure Clean"
   },
@@ -116,8 +107,8 @@ const cosmeticProducts: IProduct[] = [
     _id: "COS-010",
     name: "Setting Spray",
     category: "Makeup",
-    price: 265000,
-    stock: 38,
+    selling_price: 265000,
+    stock_quantity: 38,
     image: "https://picsum.photos/200/300?random=10",
     brand: "FixIt"
   },
@@ -125,8 +116,8 @@ const cosmeticProducts: IProduct[] = [
     _id: "COS-011",
     name: "Floral Eau de Parfum",
     category: "Fragrance",
-    price: 899000,
-    stock: 12,
+    selling_price: 899000,
+    stock_quantity: 12,
     image: "https://picsum.photos/200/300?random=11",
     brand: "Essence"
   },
@@ -134,12 +125,13 @@ const cosmeticProducts: IProduct[] = [
     _id: "COS-012",
     name: "SPF 50 Sunscreen",
     category: "Skincare",
-    price: 349000,
-    stock: 40,
+    selling_price: 349000,
+    stock_quantity: 40,
     image: "https://picsum.photos/200/300?random=12",
     brand: "SunShield"
   }
 ];
+*/
 
 const mockCustomer: ICustomer = {
   _id: "1",
@@ -151,7 +143,6 @@ const mockCustomer: ICustomer = {
 
 export default function POSCheckout() {
   const [cartItems, setCartItems] = useState<ICartItem[]>([]);
-  const [categoryFilter, setCategoryFilter] = useState("all");
   const [customer, setCustomer] = useState<ICustomer | null>(null);
   const [isAddEditCustomerDialogOpen, setIsAddEditCustomerDialogOpen] = useState(false);
   const [usePoint, setUsePoint] = useState(false);
@@ -160,17 +151,17 @@ export default function POSCheckout() {
   const [isDiscountCodeDialogOpen, setIsDiscountCodeDialogOpen] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("cash");
 
-  const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const subtotal = cartItems.reduce((sum, item) => sum + (item.selling_price * item.quantity), 0);
   const discount_amount = !discountCode ? 0
     : discountCode.type === "percent"
       ? (subtotal * discountCode.value / 100)
       : (subtotal - discountCode.value);
 
-  const handleAddToCart = (product: IProduct) => {
+  const handleAddToCart = (product: ICheckoutProduct) => {
     const existingItem = cartItems.find(item => item._id === product._id);
 
     if (existingItem) {
-      if (existingItem.quantity >= product.stock) {
+      if (existingItem.quantity >= product.stock_quantity) {
 
         return;
       }
@@ -189,7 +180,7 @@ export default function POSCheckout() {
     const newCartItems = cartItems.map(item => {
       if (item._id === productId) {
         const newQuantity = item.quantity + change;
-        if (newQuantity > item.stock) {
+        if (newQuantity > item.stock_quantity) {
           return item;
         }
         if (newQuantity <= 0) {
@@ -199,7 +190,7 @@ export default function POSCheckout() {
       }
       return item;
     })
-    const newSubtotal = newCartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const newSubtotal = newCartItems.reduce((sum, item) => sum + (item.selling_price * item.quantity), 0);
     if (discountCode && newSubtotal < discountCode.min_order_value) {
       setDiscountCode(null);
     }
@@ -208,7 +199,7 @@ export default function POSCheckout() {
 
   const handleRemoveFromCart = (productId: string) => {
     const newCartItems = cartItems.filter(item => item._id !== productId);
-    const newSubtotal = newCartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const newSubtotal = newCartItems.reduce((sum, item) => sum + (item.selling_price * item.quantity), 0);
     if (discountCode && newSubtotal < discountCode.min_order_value) {
       setDiscountCode(null);
     }
@@ -245,23 +236,12 @@ export default function POSCheckout() {
         <div className="flex flex-col sm:flex-row gap-4">
           <SearchBar
             placeholder="Search products by SKU"
-            willUpdateQuery
+            onSearch={() => {}}
           />
-          <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger size="sm" className="w-full sm:w-48">
-              <SelectValue placeholder="All Categories" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Categories</SelectItem>
-              <SelectItem value="Skincare">Skincare</SelectItem>
-              <SelectItem value="Makeup">Makeup</SelectItem>
-              <SelectItem value="Fragrance">Fragrance</SelectItem>
-            </SelectContent>
-          </Select>
         </div>
         <div className="flex-1 overflow-auto pb-4">
           <ProductsGrid
-            data={cosmeticProducts}
+            data={[]}
             handleAddToCart={handleAddToCart}
           />
         </div>

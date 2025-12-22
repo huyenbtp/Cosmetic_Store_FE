@@ -258,11 +258,11 @@ export default function ProductsManagement() {
   useEffect(() => {
     const newQuery = updateQueryParams(searchParams, { page: 1 });
     router.push(`?${newQuery}`);
-  }, [isMinMaxFilterLoad, limit, searchQuery, priceRange, stockRange]);
+  }, [isMinMaxFilterLoad, limit, priceRange, stockRange]);
 
   useEffect(() => {
     fetchProducts();
-  }, [isMinMaxFilterLoad, page, isMinMaxFilterLoad, limit, searchQuery, categorySlug, brandId, priceRange, stockRange, status]);
+  }, [isMinMaxFilterLoad, page, limit, searchQuery, categorySlug, brandId, priceRange, stockRange, status]);
 
   return (
     <div className="px-8 py-6 space-y-8">
@@ -297,7 +297,7 @@ export default function ProductsManagement() {
           <Suspense fallback={<Spinner />}>
             <ProductsTable
               loading={loading}
-              data={data}
+              data={data || []}
               onView={(id) => { router.push(`products/${id}`) }}
               onEdit={(id) => router.push(`products/${id}/edit`)}
             />

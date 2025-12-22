@@ -45,7 +45,7 @@ export default function CartSection({
                 <div>
                   <p className="text-xs text-muted-foreground/80">Price</p>
                   <p className="font-semibold text-sm text-green-600 dark:text-success1-foreground">
-                    {item.price.toLocaleString()} ₫
+                    {item.selling_price.toLocaleString()} ₫
                   </p>
                 </div>
 

@@ -1,20 +1,36 @@
 "use client"
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { login } from "@/lib/auth";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useTheme } from 'next-themes'
 import { Moon, Sun } from "lucide-react";
+import authApi from "@/lib/api/auth.api";
 
 export default function LoginPage() {
   const { theme, setTheme } = useTheme()
   const router = useRouter();
-  const [role, setRole] = useState("admin");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = () => {
-    login(role);
-    router.push(`/${role}/dashboard`);
+  const handleLogin = async () => {
+    if (!username.trim() || !password.trim()) return;
+    setLoading(true);
+
+    try {
+      const res = await authApi.login({ username, password });
+
+      const { role, user } = res;
+
+      localStorage.setItem("auth_user", JSON.stringify(user));
+
+      router.push(`/${role}/dashboard`);
+    } catch (error: any) {
+      console.error("Login failed:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -37,22 +53,25 @@ export default function LoginPage() {
             type="text"
             placeholder="Username"
             className="border p-2 pl-4 rounded-md"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            disabled={loading}
           />
           <input
             type="password"
             placeholder="Password"
             className="border p-2 pl-4 rounded-md"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            disabled={loading}
           />
-
-          <select
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
-            className="border rounded p-2"
+          <Button
+            className="w-full"
+            onClick={handleLogin}
+            disabled={loading || !username.trim() || !password.trim()}
           >
-            <option value="admin">Admin</option>
-            <option value="cashier">Cashier</option>
-          </select>
-          <Button className="w-full" onClick={handleLogin}>Login</Button>
+            Login
+          </Button>
         </CardContent>
       </Card>
     </main>

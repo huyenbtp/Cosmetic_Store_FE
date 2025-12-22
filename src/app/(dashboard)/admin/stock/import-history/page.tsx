@@ -12,6 +12,9 @@ import ImportsFilter from "./ImportsFilter";
 import ImportsTable from "./ImportsTable";
 import { Pagination } from "@/components/layout/Pagination";
 import { IImport } from "@/interfaces/import.interface";
+import { IMinMaxFilterData } from "@/interfaces/import.interface";
+import importApi, { ImportKey } from "@/lib/api/importOrder.api";
+import { updateQueryParams } from "@/lib/utils";
 
 const mockImports: IImport[] = [
   {
@@ -114,43 +117,78 @@ const mockImports: IImport[] = [
   }
 ];
 
-type ImportKey = "import_code" | "staff_name" | "staff_code";
-
-interface IImportMangementData {
-  maxAmount: number;
-  importList: IImport[];
-  totalResults: number;
+const NullMinMaxFilterData: IMinMaxFilterData = {
+  totalAmount: { min: 0, max: 0 },
 }
 
 export default function ImportsManagement() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [loading, setLoading] = useState(false);
 
-  const [data, setData] = useState<IImportMangementData>();
+  const [minMaxFilterData, setMinMaxFilterData] = useState<IMinMaxFilterData>(NullMinMaxFilterData);
+  const isMinMaxFilterLoad = minMaxFilterData !== NullMinMaxFilterData;
+  const [data, setData] = useState<IImport[]>();
   const [total, setTotal] = useState(0);
-  
-  const [searchBy, setSearchBy] = useState<ImportKey>("import_code");
+
   const [limit, setLimit] = useState(7);
-  const page = Number(searchParams.get("page") || 1) || 1;
+  const rawPage = Number(searchParams.get("page"));
+  const page = Number.isInteger(rawPage) && rawPage > 0 ? rawPage : 1;
   const searchQuery = searchParams.get("q") || "";
+  const [searchBy, setSearchBy] = useState<ImportKey>("import_code");
   const fromDate = searchParams.get("fromDate") || "";
   const toDate = searchParams.get("toDate") || "";
-  const minAmount = Number(searchParams.get("minAmount") || 0) || 0;
-  const maxAmount = Number(searchParams.get("maxAmount") || 0) || 0;
+  const [totalRange, setTotalRange] = useState<number[]>([0, 0]);
+
+  useEffect(() => {
+    const initFilters = async () => {
+      try {
+        const res = await importApi.fetchImportStats();
+
+        setMinMaxFilterData(res);
+        setTotalRange([res.totalAmount.min, res.totalAmount.max]);
+      } catch (err) {
+        console.error("Init filter failed", err);
+      }
+    };
+
+    initFilters();
+  }, []);
 
   const fetchImports = async () => {
+    setLoading(true);
+    if (!isMinMaxFilterLoad) return;
 
-  };
+    try {
+      const res = await importApi.fetchImports({
+        page,
+        limit,
+        q: searchQuery || undefined,
+        by: searchBy || "import_code",
+        fromDate: fromDate || undefined,
+        toDate: toDate,
+        minTotal: totalRange[0] || undefined,
+        maxTotal: totalRange[1],
+      });
+      setData(res.data);
+      setTotal(res.pagination?.total ?? 0);
+    } catch (error) {
+      console.error("Fetch imports failed:", error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    const newQuery = updateQueryParams(searchParams, { page: 1 });
+    router.push(`?${newQuery}`);
+  }, [isMinMaxFilterLoad, limit, searchBy, totalRange]);
+
 
   useEffect(() => {
     fetchImports();
-    setData({
-      maxAmount: 20000000,
-      importList: mockImports.slice(0, limit),
-      totalResults: mockImports.length,
-    })                  //sau khi fetch data thật thì xóa dòng này đi
-    setTotal(mockImports.length)
-  }, [page, limit, searchQuery, searchBy, fromDate, toDate, minAmount, maxAmount]);
+
+  }, [isMinMaxFilterLoad, page, limit, searchQuery, searchBy, fromDate, toDate, totalRange]);
 
   return (
     <div className="px-8 py-6 space-y-8">
@@ -174,7 +212,7 @@ export default function ImportsManagement() {
             <SearchBar placeholder="Search import orders..." willUpdateQuery className="w-84" />
 
             <Select value={searchBy} onValueChange={(value: ImportKey) => setSearchBy(value)}>
-              <SelectTrigger size="sm" className="w-full sm:w-42">
+              <SelectTrigger size="sm" className="w-full sm:w-36">
                 <SelectValue placeholder="Search by ..." />
               </SelectTrigger>
               <SelectContent>
@@ -184,14 +222,19 @@ export default function ImportsManagement() {
               </SelectContent>
             </Select>
 
-            <ImportsFilter maxAmount={data?.maxAmount || 0} />
+            <ImportsFilter
+              data={minMaxFilterData}
+              totalRange={totalRange}
+              handleApplyTotal={(range) => setTotalRange(range)}
+            />
           </div>
         </CardHeader>
 
         <CardContent>
           <Suspense fallback={<Spinner />}>
             <ImportsTable
-              data={data?.importList || []}
+              loading={loading}
+              data={data || []}
               onView={(id) => { router.push(`import-history/${id}`) }}
             />
           </Suspense>

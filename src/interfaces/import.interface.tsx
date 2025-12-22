@@ -15,10 +15,16 @@ export interface IImport {
   createdAt: string;
 }
 
+export interface IMinMaxFilterData {
+  totalAmount: {
+    min: number;
+    max: number;
+  };
+}
+
 export interface IImportDetail {
   _id: string;
   import_code: string;
-  staff_id: string | null;
   staff: {
     _id: string;
     staff_code: string;
@@ -34,12 +40,6 @@ export interface IImportDetail {
 }
 
 export interface IAddEditImport {
-  _id?: string;
-  import_code?: string;
-  staff_id: string;
   items: IAddEditImportItem[];
-  products_updated: number;
-  items_imported: number;
-  total_amount: number;
   note: string;
 }

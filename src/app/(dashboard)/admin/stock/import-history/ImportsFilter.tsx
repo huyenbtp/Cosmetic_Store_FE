@@ -4,8 +4,17 @@ import { updateQueryParams } from "@/lib/utils";
 import { DateRangePicker } from "@/components/layout/DateRangePicker";
 import { DateRange } from "react-day-picker";
 import ValueRangePicker from "@/components/layout/ValueRangePicker";
+import { IMinMaxFilterData } from "@/interfaces/import.interface";
 
-export default function ImportsFilter({ maxAmount }: { maxAmount: number }) {
+export default function ImportsFilter({ 
+  data,
+  totalRange,
+  handleApplyTotal, 
+}: { 
+  data: IMinMaxFilterData;
+  totalRange: number[];
+  handleApplyTotal: (range: number[]) => void;
+}) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -13,14 +22,6 @@ export default function ImportsFilter({ maxAmount }: { maxAmount: number }) {
     from: searchParams.get("fromDate") ? new Date(searchParams.get("fromDate") as string) : undefined,
     to: searchParams.get("toDate") ? new Date(searchParams.get("toDate") as string) : undefined,
   });
-  const [totalAmountRange, setTotalAmountRange] = useState<number[]>([0, 0]);
-
-  useEffect(() => {
-    setTotalAmountRange([
-      searchParams.get("minAmount") ? Number(searchParams.get("minAmount")) : 0,
-      searchParams.get("maxAmount") ? Number(searchParams.get("maxAmount")) : maxAmount
-    ])
-  }, [maxAmount]);
 
   const handleDateRangeChange = (range: DateRange | undefined) => {
     setDateRange(range);
@@ -37,21 +38,6 @@ export default function ImportsFilter({ maxAmount }: { maxAmount: number }) {
     router.push(`?${newQuery}`);
   };
 
-  const handleTotalAmountChange = (range: number[]) => {
-    setTotalAmountRange(range);
-
-    const min = range[0];
-    const max = range[1];
-
-    const newQuery = updateQueryParams(searchParams, {
-      minAmount: min,
-      maxAmount: max,
-      page: 1,
-    });
-
-    router.push(`?${newQuery}`);
-  }
-
   return (
     <>
       <DateRangePicker
@@ -64,10 +50,11 @@ export default function ImportsFilter({ maxAmount }: { maxAmount: number }) {
         placeholder="Total Amount"
         label="Total Amount Range"
         unit="đ"
-        max={maxAmount}
-        step={1_000_000}
-        value={totalAmountRange}
-        handleApply={handleTotalAmountChange}
+        min={data.totalAmount.min}
+        max={data.totalAmount.max}
+        step={100_000}
+        value={totalRange}
+        handleApply={handleApplyTotal}
       />
     </>
   );

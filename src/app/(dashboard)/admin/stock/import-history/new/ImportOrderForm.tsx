@@ -10,11 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import ImportItemsTable from "./ImportItemsTable";
 
 const NullImport: IAddEditImport = {
-  staff_id: "",
   items: [],
-  products_updated: 0,
-  items_imported: 0,
-  total_amount: 0,
   note: "",
 };
 
@@ -31,34 +27,43 @@ const mockStaff: IStaffCreated = {
 }
 
 interface ImportFormProps {
+  loading: boolean;
   onSubmit: (data: IAddEditImport) => void;
 }
 
-export default function ImportOrderForm({ onSubmit }: ImportFormProps) {
-  const [staff, setStaff] = useState<IStaffCreated>({
-    _id: "",
-    staff_code: "",
-    full_name: "",
-  });
+export default function ImportOrderForm({
+  loading,
+  onSubmit
+}: ImportFormProps) {
+  const creator = JSON.parse(localStorage.getItem("auth_user") || "{}");
   const [items, setItems] = useState<IImportItemUI[]>([]);
   const [isAddItemOpen, setIsAddItemOpen] = useState(false);
   const [notes, setNotes] = useState("");
 
-  useEffect(() => {
-    const staff = mockStaff; // đổi thành fetch real user
-    setStaff(staff);
-  }, []);
-
   const handleAddItem = (selectedProduct: any, quantity: number, unitCost: number) => {
-    setItems(prev => [
-      ...prev,
-      {
-        product_id: selectedProduct._id,
-        quantity,
-        unit_price: unitCost,
-        product: selectedProduct
-      }
-    ]);
+    const existingItem = items.find(item => item.product_id === selectedProduct._id);
+
+    if (existingItem) {
+      setItems(items.map(item =>
+        item.product._id === selectedProduct._id
+          ? {
+            ...item,
+            quantity: item.quantity + quantity,
+            unit_price: unitCost,
+          }
+          : item
+      ));
+    } else {
+      setItems(prev => [
+        ...prev,
+        {
+          product_id: selectedProduct._id,
+          quantity,
+          unit_price: unitCost,
+          product: selectedProduct
+        }
+      ]);
+    }
 
     setIsAddItemOpen(false);
   };
@@ -96,11 +101,7 @@ export default function ImportOrderForm({ onSubmit }: ImportFormProps) {
 
   const handleSubmit = () => {
     const payload: IAddEditImport = {
-      staff_id: staff._id,
       items,
-      products_updated: items.length,
-      items_imported: totalItems,
-      total_amount: totalAmount,
       note: notes,
     };
 
@@ -120,6 +121,7 @@ export default function ImportOrderForm({ onSubmit }: ImportFormProps) {
         </div>
 
         <Button
+          disabled={loading || items.length <= 0}
           onClick={handleSubmit}
         >
           <Save className="w-4 h-4 mr-2" />
@@ -135,7 +137,7 @@ export default function ImportOrderForm({ onSubmit }: ImportFormProps) {
           <CardContent className="space-y-4">
             <div className="flex justify-between">
               <span>Created by:</span>
-              <span className="font-medium">{staff.full_name}</span>
+              <span className="font-medium">{creator.full_name}</span>
             </div>
             <div className="flex justify-between">
               <span>Created date:</span>
@@ -168,7 +170,6 @@ export default function ImportOrderForm({ onSubmit }: ImportFormProps) {
               open={isAddItemOpen}
               setOpen={setIsAddItemOpen}
               handleAddItem={handleAddItem}
-              onAddNewProduct={() => { }}
             />
           </div>
         </CardHeader>

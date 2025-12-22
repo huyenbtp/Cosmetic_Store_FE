@@ -63,11 +63,11 @@ export default function ProductDetail() {
     try {
       await productApi.updateStatus(id, status);
     } catch (error) {
-      console.error("Publish product failed:", error);
+      console.error("Change product's status failed:", error);
     } finally {
       fetchProduct()
     }
-  }
+  };
 
   if (loading) return (
     <div className="h-full flex justify-center items-center">

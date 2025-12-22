@@ -1,3 +1,4 @@
+import { IFetchedProduct } from "@/app/(dashboard)/admin/stock/import-history/new/AddImportItemDialog";
 import { IMinMaxFilterData, IProduct, IProductDetail } from "@/interfaces/product.interface";
 import axios from "@/lib/axios";
 
@@ -42,6 +43,10 @@ const productApi = {
     return axios.get(`/products/${id}`);
   },
 
+  fetchProductBySKU: async (sku: string): Promise<IFetchedProduct | null> => {
+    return axios.get(`/products/import-item/${sku}`);
+  },
+
   createProduct: async (payload: ProductPayload): Promise<IProduct> => {
     const formData = new FormData();
 
@@ -80,7 +85,7 @@ const productApi = {
   },
 
   updateStatus: async (id: string, status: ProductStatus): Promise<IProduct> => {
-  return axios.patch(`/products/${id}/status`, { status });
+    return axios.patch(`/products/${id}/status`, { status });
   },
 
   deleteProduct: async (id: string) => {

@@ -6,6 +6,7 @@ import { Eye, Edit, } from "lucide-react";
 import { IImport } from "@/interfaces/import.interface";
 import dayjs from "dayjs";
 import { capitalizeWords } from "@/lib/utils";
+import { Spinner } from "@/components/ui/spinner";
 
 export function getStatusStyle(status: string) {
   if (status === "paid") {
@@ -16,9 +17,11 @@ export function getStatusStyle(status: string) {
 };
 
 export default function ImportsTable({
+  loading,
   data,
   onView,
 }: {
+  loading: boolean;
   data: IImport[];
   onView: (id: string) => void;
 }) {
@@ -38,7 +41,13 @@ export default function ImportsTable({
       </TableHeader>
 
       <TableBody>
-        {data.length > 0 ? (data.map((item) => (
+        {loading ? (
+          <TableRow>
+            <TableCell colSpan={7} align="center">
+              <Spinner className="size-10" />
+            </TableCell>
+          </TableRow>
+        ) : data.length > 0 ? (data.map((item) => (
           <TableRow key={item._id}>
             <TableCell className="w-20/100 font-medium">
               {item.import_code}
