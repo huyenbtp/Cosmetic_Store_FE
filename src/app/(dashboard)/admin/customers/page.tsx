@@ -12,6 +12,7 @@ export default function CustomersManagement() {
   const router = useRouter();
   const [selectedItem, setSelectedItem] = useState<IAddEditCustomer | null>(null);
   const [isAddEditDialogOpen, setIsAddEditDialogOpen] = useState(false);
+  const [customerDialogMode, setCustomerDialogMode] = useState<"create" | "edit">("create");
 
   return (
     <div className="px-8 py-6 space-y-8">
@@ -22,6 +23,7 @@ export default function CustomersManagement() {
         <Button
           onClick={() => {
             setSelectedItem(null)
+            setCustomerDialogMode("create")
             setIsAddEditDialogOpen(true)
           }}
         >
@@ -34,12 +36,14 @@ export default function CustomersManagement() {
         onView={(id) => { router.push(`customers/${id}`) }}
         onEdit={(selected) => {
           setSelectedItem(selected)
+          setCustomerDialogMode("edit")
           setIsAddEditDialogOpen(true)
         }}
         onDelete={() => { }}
       />
 
       <AddEditCustomerDialog
+        mode={customerDialogMode}
         initialData={selectedItem}
         open={isAddEditDialogOpen}
         setOpen={setIsAddEditDialogOpen}

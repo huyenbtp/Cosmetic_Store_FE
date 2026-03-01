@@ -230,11 +230,12 @@ export default function ProductsManagement() {
   }, []);
 
   const fetchProducts = async () => {
-    setLoading(true);
     if (!isMinMaxFilterLoad) return;
+    if (loading) return;
+    setLoading(true);
 
     try {
-      const res = await productApi.fetchProducts({
+      const res = await productApi.fetchProductsPagination({
         page,
         limit,
         q: searchQuery || undefined,

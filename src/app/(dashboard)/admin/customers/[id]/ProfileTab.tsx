@@ -65,7 +65,7 @@ export default function ProfileTab({
             <div>
               <Label className="text-sm text-muted-foreground">Member Since</Label>
               <p className="font-medium">
-                {dayjs(data.join_date).format("MMMM D, YYYY")}
+                {dayjs(data.createdAt).format("MMMM D, YYYY")}
               </p>
             </div>
             <div>

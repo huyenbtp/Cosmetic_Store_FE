@@ -3,7 +3,7 @@ export interface ICustomer {
   name: string;
   phone: string;
   points: number;
-  join_date: string;
+  createdAt: string;
 }
 
 export interface ICustomerDetail {
@@ -11,7 +11,7 @@ export interface ICustomerDetail {
   name: string;
   phone: string;
   points: number;
-  join_date: string;
+  createdAt: string;
   lastPurchase: string;
   totalPurchases: number;
   totalSpent: number;

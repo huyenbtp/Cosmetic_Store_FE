@@ -1,15 +1,23 @@
 "use client"
 
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Spinner } from "@/components/ui/spinner";
 import { ImageWithFallback } from "@/components/layout/ImageWithFallback";
 import { ICheckoutProduct } from "@/interfaces/product.interface";
 
 interface ProductsGridProps {
+  loading: boolean;
+  hasMore: boolean;
+  onMore: () => void;
   data: ICheckoutProduct[];
   handleAddToCart: (item: ICheckoutProduct) => void;
 }
 export default function ProductsGrid({
+  loading,
+  hasMore,
+  onMore,
   data,
   handleAddToCart,
 }: ProductsGridProps) {
@@ -51,6 +59,19 @@ export default function ProductsGrid({
             </CardContent>
           </Card>
         ))}
+      </div>
+      <div className="flex justify-center items-center mt-4">
+        {loading ? (
+          <Spinner className="size-10" />
+        ) : hasMore && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onMore}
+          >
+            More...
+          </Button>
+        )}
       </div>
     </>
   );

@@ -20,49 +20,49 @@ const mockCustomers: ICustomer[] = [
     name: "Sarah Johnson",
     phone: "0123456789",
     points: 15000,
-    join_date: "2024-01-15",
+    createdAt: "2024-01-15",
   },
   {
     _id: '2',
     name: "Mike Chen",
     phone: "0123456789",
     points: 32000,
-    join_date: "2024-03-22",
+    createdAt: "2024-03-22",
   },
   {
     _id: '3',
     name: "Emma Wilson",
     phone: "0123456789",
     points: 10000,
-    join_date: "2024-02-10",
+    createdAt: "2024-02-10",
   },
   {
     _id: '4',
     name: "David Brown",
     phone: "0123456789",
     points: 103000,
-    join_date: "2023-11-05",
+    createdAt: "2023-11-05",
   },
   {
     _id: '5',
     name: "Lisa Garcia",
     phone: "0123456789",
     points: 10000,
-    join_date: "2024-06-18",
+    createdAt: "2024-06-18",
   },
   {
     _id: '6',
     name: "James Taylor",
     phone: "0123456789",
     points: 40000,
-    join_date: "2024-04-12",
+    createdAt: "2024-04-12",
   },
   {
     _id: '7',
     name: "Maria Rodriguez",
     phone: "0123456789",
     points: 20000,
-    join_date: "2024-08-03",
+    createdAt: "2024-08-03",
   }
 ];
 
@@ -162,7 +162,7 @@ export default function CustomersTable({
                   </TableCell>
 
                   <TableCell className="w-1/5 text-muted-foreground">
-                    {dayjs(customer.join_date).format("MMMM D, YYYY")}
+                    {dayjs(customer.createdAt).format("MMMM D, YYYY")}
                   </TableCell>
 
                   <TableCell className="w-1/5 font-medium">

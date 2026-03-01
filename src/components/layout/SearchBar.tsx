@@ -9,11 +9,12 @@ import { Input } from "../ui/input";
 interface SearchBarProps {
   placeholder: string;
   willUpdateQuery?: boolean;
+  onChange?: (query: string) => void;
   onSearch?: (query: string) => void;
   className?: string;
 }
 
-export default function SearchBar({ placeholder, willUpdateQuery, onSearch, className }: SearchBarProps) {
+export default function SearchBar({ placeholder, willUpdateQuery, onChange, onSearch, className }: SearchBarProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -40,7 +41,10 @@ export default function SearchBar({ placeholder, willUpdateQuery, onSearch, clas
       <Input
         placeholder={placeholder}
         value={value}
-        onChange={(e) => setValue(e.target.value)}
+        onChange={(e) => {
+          if (onChange) onChange(e.target.value);
+          setValue(e.target.value)
+        } }
         onKeyDown={handleKeyDown}
         className={cn("pl-10 w-96", className)}
       />

@@ -45,19 +45,11 @@ export interface IOrderDetail {
 }
 
 export interface IAddEditOrder {
-  _id?: string;
-  order_code?: string;
-  cashier_id: string;
   customer_id: string | null;
   discount_id: string | null;
   items: IAddEditOrderItem[];
-  total_items: number;
-  subtotal: number;
-  discount_amount: number;
   points_used: number;
-  total: number;
-  payment_method: string;
-  payment_status: string;
+  note: string;
 }
 
 export interface IDiscountCode {

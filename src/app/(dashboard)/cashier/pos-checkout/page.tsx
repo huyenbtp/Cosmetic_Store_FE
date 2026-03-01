@@ -1,20 +1,24 @@
 "use client"
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Phone, Star, UserPlus } from "lucide-react";
+import { Phone, Search, Star, UserPlus } from "lucide-react";
 import SearchBar from "@/components/layout/SearchBar";
 import ProductsGrid from "./ProductsGrid";
 import CartSection from "./CartSection";
 import AddEditCustomerDialog from "@/components/layout/form/AddEditCustomerDialog";
 import CheckoutPaymentSheet from "./CheckoutPaymentSheet";
 import { ICustomer } from "@/interfaces/customer.interface";
-import { IDiscountCode } from "@/interfaces/order.interface";
+import { IAddEditOrder, IDiscountCode } from "@/interfaces/order.interface";
 import DiscountCodePickerDialog from "./DiscountCodePickerDialog";
 import { ICheckoutProduct } from "@/interfaces/product.interface";
+import productApi from "@/lib/api/product.api";
+import orderApi from "@/lib/api/order.api";
+import { Input } from "@/components/ui/input";
+import customerApi from "@/lib/api/customer.api";
 
 export interface ICartItem extends ICheckoutProduct {
   quantity: number;
@@ -138,18 +142,72 @@ const mockCustomer: ICustomer = {
   name: "Sarah Johnson",
   phone: "0912345678",
   points: 10000,
-  join_date: "",
+  createdAt: "",
 };
 
 export default function POSCheckout() {
+  const [products, setProducts] = useState<ICheckoutProduct[]>([]);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [search, setSearch] = useState("");
+
   const [cartItems, setCartItems] = useState<ICartItem[]>([]);
+  const [customerPhone, setCustomerPhone] = useState("");
   const [customer, setCustomer] = useState<ICustomer | null>(null);
+  const [customerDialogMode, setCustomerDialogMode] = useState<"create" | "edit">("create");
   const [isAddEditCustomerDialogOpen, setIsAddEditCustomerDialogOpen] = useState(false);
   const [usePoint, setUsePoint] = useState(false);
   const [note, setNote] = useState("");
   const [discountCode, setDiscountCode] = useState<IDiscountCode | null>(null);
   const [isDiscountCodeDialogOpen, setIsDiscountCodeDialogOpen] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("cash");
+
+  const fetchProducts = async (reset = false) => {
+    if (loading) return;
+    setLoading(true);
+
+    try {
+      const data = await productApi.fetchProductsInfinite({
+        q: search || undefined,
+        page: reset ? 1 : page,
+        limit: 6,
+      });
+
+      if (reset) {
+        setProducts(data);
+        setPage(2);
+      } else {
+        setProducts((prev) => [...prev, ...data]);
+        setPage((prev) => prev + 1);
+      }
+
+      if (data.length < 6) {
+        setHasMore(false);
+      }
+    } catch (err) {
+      console.error("Fetch products failed", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts(true);
+  }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setHasMore(true);
+      fetchProducts(true);
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [search]);
+
+  const handleFetchMore = () => {
+    fetchProducts();
+  };
 
   const subtotal = cartItems.reduce((sum, item) => sum + (item.selling_price * item.quantity), 0);
   const discount_amount = !discountCode ? 0
@@ -206,27 +264,48 @@ export default function POSCheckout() {
     setCartItems(newCartItems);
   };
 
-  const handleSearchCustomer = (phoneNumber: string) => {
+  const handleSearchCustomer = async (phoneNumber: string) => {
     const phoneno = /^0\d{9}$/;
     if (!phoneNumber.match(phoneno)) {
       alert("Wrong phone number format");
       return;
     }
 
-    const res = mockCustomer;
+    const res = await customerApi.fetchCustomerByPhone(phoneNumber);
     if (res) setCustomer(res);
     else setCustomer(null);
   };
 
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
     if (cartItems.length === 0) {
       return;
     }
 
-    // Reset form
-    setCartItems([]);
-    setCustomer(null);
-    setPaymentMethod("cash");
+    setLoading(true)
+
+    try {
+      const payload: IAddEditOrder = {
+        customer_id: customer ? customer._id : null,
+        discount_id: discountCode ? discountCode._id : null,
+        items: cartItems.map((item) => ({
+          product_id: item._id,
+          unit_price: item.selling_price,
+          quantity: item.quantity
+        })),
+        points_used: usePoint && customer ? customer.points : 0,
+        note: note ?? "",
+      }
+      const res = await orderApi.createOrder(payload)
+
+    } catch (error) {
+      console.error("Create order failed:", error);
+    } finally {
+      setLoading(false)
+      // Reset form
+      setCartItems([]);
+      setCustomer(null);
+      setPaymentMethod("cash");
+    }
   };
 
   return (
@@ -235,13 +314,16 @@ export default function POSCheckout() {
       <div className="flex-2 flex flex-col gap-6 h-full">
         <div className="flex flex-col sm:flex-row gap-4">
           <SearchBar
-            placeholder="Search products by SKU"
-            onSearch={() => {}}
+            placeholder="Search products by name or SKU"
+            onChange={(value) => setSearch(value)}
           />
         </div>
         <div className="flex-1 overflow-auto pb-4">
           <ProductsGrid
-            data={[]}
+            loading={loading}
+            hasMore={hasMore}
+            onMore={handleFetchMore}
+            data={products || []}
             handleAddToCart={handleAddToCart}
           />
         </div>
@@ -256,25 +338,37 @@ export default function POSCheckout() {
               <Label className="text-md">Customer Information</Label>
               <div className="flex items-center gap-2">
                 <div className="flex-1">
-                  <SearchBar
+                  <Input
+                    value={customerPhone}
+                    onChange={(e) => setCustomerPhone(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") handleSearchCustomer(customerPhone)
+                    }}
                     placeholder="Search by phone number"
-                    onSearch={handleSearchCustomer}
                     className="w-full"
                   />
                 </div>
                 <Button
-                  onClick={() => {
-                    setCustomer(null);
-                    setIsAddEditCustomerDialogOpen(true)
-                  }}
+                  onClick={() => handleSearchCustomer(customerPhone)}
                 >
-                  <UserPlus className="mr-1" />
-                  New
+                  <Search />
                 </Button>
               </div>
 
               <div className="mb-4">
-                {customer && (
+                {!customer ? (
+                  <Button
+                    onClick={() => {
+                      setCustomer(null);
+                      setCustomerDialogMode("create");
+                      setIsAddEditCustomerDialogOpen(true)
+                    }}
+                  >
+                    <UserPlus className="mr-1" />
+                    New
+                  </Button>
+
+                ) : (
                   <div className="flex text-sm bg-accent/50 py-2.5 px-4 rounded-lg">
                     <div className="flex-1">
                       <div className="font-medium text-primary">{customer.name}</div>
@@ -293,6 +387,7 @@ export default function POSCheckout() {
                         size="sm"
                         variant="ghost"
                         onClick={() => {
+                          setCustomerDialogMode("edit");
                           setIsAddEditCustomerDialogOpen(true)
                         }}
                       >
@@ -351,7 +446,9 @@ export default function POSCheckout() {
       </div>
 
       <AddEditCustomerDialog
+        mode={customerDialogMode}
         initialData={customer}
+        setData={setCustomer}
         open={isAddEditCustomerDialogOpen}
         setOpen={setIsAddEditCustomerDialogOpen}
       />

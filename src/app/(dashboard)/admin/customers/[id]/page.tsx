@@ -16,7 +16,7 @@ const mockCustomer: ICustomerDetail = {
   name: "Sarah Johnson",
   phone: "+1 (555) 123-4567",
   points: 5655,
-  join_date: "2025-01-15T09:30:00",
+  createdAt: "2025-01-15T09:30:00",
   lastPurchase: "2025-11-26T09:30:00",
   totalPurchases: 6,
   totalSpent: 3290300,
@@ -71,7 +71,7 @@ export default function ProductDetail() {
         <div className="flex-1 mr-10">
           <h1 className="text-2xl font-semibold">{data.name}</h1>
           <p className="text-muted-foreground">
-            Customer since {dayjs(data.join_date).format("MMM D, YYYY")}
+            Customer since {dayjs(data.createdAt).format("MMM D, YYYY")}
           </p>
         </div>
 

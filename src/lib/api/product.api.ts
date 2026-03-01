@@ -1,11 +1,17 @@
 import { IFetchedProduct } from "@/app/(dashboard)/admin/stock/import-history/new/AddImportItemDialog";
-import { IMinMaxFilterData, IProduct, IProductDetail } from "@/interfaces/product.interface";
+import { ICheckoutProduct, IMinMaxFilterData, IProduct, IProductDetail } from "@/interfaces/product.interface";
 import axios from "@/lib/axios";
 
 export type ProductKey = "name" | "sku";
 export type ProductStatus = "published" | "unpublished";
 
-export interface FetchProductsParams {
+export interface FetchProductsInfiniteParams {
+  page?: number;
+  limit?: number;
+  q?: string;
+}
+
+export interface FetchProductsPaginationParams {
   page?: number;
   limit?: number;
   q?: string;
@@ -31,8 +37,12 @@ export interface ProductPayload {
 }
 
 const productApi = {
-  fetchProducts: async (params: FetchProductsParams): Promise<{ data: any, pagination: any }> => {
-    return axios.get("/products", { params });
+  fetchProductsInfinite: async (params: FetchProductsInfiniteParams): Promise<ICheckoutProduct[]> => {
+    return axios.get("/products/infinite", { params });
+  },
+
+  fetchProductsPagination: async (params: FetchProductsPaginationParams): Promise<{ data: any, pagination: any }> => {
+    return axios.get("/products/pagination", { params });
   },
 
   fetchProductStats: async (): Promise<IMinMaxFilterData> => {
